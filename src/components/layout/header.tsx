@@ -16,22 +16,28 @@ function HeaderComponent() {
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4 md:py-6">
-        {projectId && project ? (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+        {projectId ? (
+          project ? (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+              <Link href="/" className="hover:opacity-80 transition">
+                <h1 className="text-xl md:text-2xl font-bold text-primary">WedPlan</h1>
+              </Link>
+              <div className="text-center sm:text-right">
+                <p className="text-base md:text-xl font-semibold text-gray-800">
+                  {project.brideFirstName} & {project.groomFirstName}
+                </p>
+                {project.weddingDate && (
+                  <p className="text-xs md:text-sm text-gray-600">
+                    {new Date(project.weddingDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : (
             <Link href="/" className="hover:opacity-80 transition">
               <h1 className="text-xl md:text-2xl font-bold text-primary">WedPlan</h1>
             </Link>
-            <div className="text-center sm:text-right">
-              <p className="text-base md:text-xl font-semibold text-gray-800">
-                {project.brideFirstName} & {project.groomFirstName}
-              </p>
-              {project.weddingDate && (
-                <p className="text-xs md:text-sm text-gray-600">
-                  {new Date(project.weddingDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
-                </p>
-              )}
-            </div>
-          </div>
+          )
         ) : (
           <>
             <h1 className="text-2xl md:text-3xl font-bold text-primary">WedPlan</h1>
