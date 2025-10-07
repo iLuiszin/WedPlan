@@ -10,7 +10,7 @@ export default function HomePage() {
     <>
       <div className="min-h-[600px] flex flex-col items-center justify-center text-center px-4">
         <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-          Wedding Organizer
+          WedPlan
         </h1>
         <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl">
           Organize seu casamento de forma simples e colaborativa. Gerencie convidados, orçamentos e
