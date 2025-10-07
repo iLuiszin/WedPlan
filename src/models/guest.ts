@@ -16,7 +16,7 @@ const guestSchema = new Schema<IGuest>(
   {
     projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true, index: true },
     firstName: { type: String, required: true, trim: true, maxlength: 100 },
-    lastName: { type: String, required: true, trim: true, maxlength: 100 },
+    lastName: { type: String, required: false, trim: true, maxlength: 100, default: '' },
     category: {
       type: String,
       required: true,

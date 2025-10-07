@@ -74,7 +74,7 @@ export async function importGuestsFromJSONAction(
     const guests = parsed.guests.map((g: Partial<IGuest>) => ({
       projectId,
       firstName: g.firstName || '',
-      lastName: g.lastName || '',
+      lastName: g.lastName ?? '',
       category: g.category || 'both',
       role: g.role || 'guest',
       partnerId: null, // Skip partner linking on import for simplicity
