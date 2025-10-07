@@ -1,198 +1,138 @@
 # WedPlan
 
-Aplicação moderna de planejamento de casamento construída com Next.js 15, TypeScript e MongoDB. Gerencie múltiplos projetos de casamento, acompanhe convidados e organize orçamentos em um só lugar.
+Aplicacao web para organizar casamentos de ponta a ponta. O WedPlan permite criar varios projetos de casamento, controlar convidados, acompanhar orcamentos e compartilhar informacoes com o time envolvido na celebracao.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/iLuiszin/wedding-organizer)
+## Visao Geral
 
-## Funcionalidades
+- Painel inicial com criacao rapida de novos casamentos e acesso via link compartilhavel.
+- Projetos isolados: cada casamento tem convidados, orcamentos e configuracoes proprias.
+- Base em Next.js 15 com Server Actions para garantir fluxo reativo e seguro.
+- Interface responsiva desenvolvida com Tailwind CSS e foco em experiência mobile-first.
 
-### 🎯 Gerenciamento Multi-Projetos
-- Crie e gerencie múltiplos projetos de casamento
-- URLs compartilháveis para colaboração fácil
-- Isolamento completo de dados entre projetos
-- Painel do projeto com informações do casal e data do casamento
+## Funcionalidades Principais
 
-### 👥 Gerenciamento de Convidados
-- Operações CRUD completas para convidados
-- Vinculação de parceiros com relacionamentos bidirecionais
-- Atribuição de categoria: Lado do noivo, lado da noiva, ou ambos
-- Designação de função: Convidado, padrinho ou madrinha
-- Estatísticas em tempo real (total de convidados, casais, padrinhos)
-- Edição inline e categorias clicáveis
-- Busca e filtro por nome ou categoria
-- Exportação para CSV (compatível com Excel UTF-8 BOM)
-- Importação/Exportação via JSON com metadados
+### Projetos
+- Criacao de casamentos ilimitados com dados do casal e data prevista.
+- Compartilhamento do projeto por URL dedicada.
+- Revalidacao automatica de paginas sempre que os dados mudam.
 
-### 💰 Gerenciamento de Orçamentos
-- Acompanhe orçamentos de múltiplos locais
-- Gerenciamento inline de itens por orçamento
-- Cálculos automáticos de totais
-- Total geral entre todos os orçamentos
-- Ordenação por preço, nome ou data
-- Busca e filtro por nome do local
-- Formatação de moeda em Real Brasileiro (R$)
+### Convidados
+- CRUD completo com validacao usando Zod.
+- Vinculo de parceiros e classificacao por lado (noiva, noivo ou ambos).
+- Definicao de papeis (convidado, madrinha, padrinho) e contadores em tempo real.
+- Busca, filtros e edicao inline otimizados para uso em dispositivos pequenos.
 
-### ✨ Experiência do Usuário
-- Design moderno e responsivo com Tailwind CSS
-- Atualizações em tempo real com UI otimista
-- Notificações toast para todas as operações
-- Error boundaries com funcionalidade de retry
-- Estados de carregamento e transições suaves
-- Interface amigável para dispositivos móveis
+### Orcamentos
+- Controle de fornecedores e categorias de gasto por projeto.
+- Lancamento de itens com calculo automatico de total e exibicao do valor consolidado.
+- Ordenacao por nome, valor ou data e suporte a filtros rapidos.
 
-## Tech Stack
+### Experiencia do Usuario
+- Feedback imediato com toasts e estados de carregamento.
+- Hooks personalizados para centralizar logica de mutacoes com React Query.
+- Layout responsivo que se adapta a tablets e smartphones em modo retrato ou paisagem.
 
-- **Framework:** Next.js 15 (App Router)
-- **Language:** TypeScript 5.x (strict mode)
-- **Database:** MongoDB with Mongoose
-- **State Management:** TanStack Query (React Query v5)
-- **Validation:** Zod
-- **Forms:** React Hook Form
-- **Styling:** Tailwind CSS
-- **UI Components:** Custom components with shadcn/ui patterns
-- **Notifications:** Sonner
+## Como Funciona
 
-## Começando
+1. **Criar projeto** – informe os dados do casal e (opcionalmente) a data do casamento.
+2. **Convidar colaboradores** – compartilhe o link do projeto com quem vai ajudar na organizacao.
+3. **Gerenciar convidados** – cadastre pessoas, categorize, defina papeis e vincule casais.
+4. **Planejar orcamentos** – registre fornecedores, itens e acompanhe os custos consolidados.
+5. **Manter atualizado** – edite dados diretamente nos cards; as mudancas sao refletidas em tempo real.
 
-### Pré-requisitos
+## Stack Tecnica
+
+- **Framework**: Next.js 15 (App Router, Server Actions)
+- **Linguagem**: TypeScript em modo estrito
+- **Banco de dados**: MongoDB com Mongoose
+- **Data fetching**: TanStack Query 5 com cache e invalidacao inteligente
+- **Forms e validacao**: React Hook Form + Zod
+- **Estilos**: Tailwind CSS, componentes customizados seguindo padroes shadcn/ui
+- **Feedback visual**: Biblioteca Sonner para notificacoes
+
+## Guia Rápido
+
+### Pre-requisitos
 
 - Node.js 20 ou superior
-- Conta MongoDB Atlas ou instância local do MongoDB
+- Instancia MongoDB (Atlas ou local)
 
-### Instalação
+### Instalacao
 
-1. Clone o repositório:
 ```bash
-git clone https://github.com/iLuiszin/wedding-organizer.git
-cd wedding-organizer
-```
-
-2. Instale as dependências:
-```bash
+git clone https://github.com/iLuiszin/WedPlan.git
+cd WedPlan
 npm install
-```
-
-3. Configure as variáveis de ambiente:
-```bash
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` e adicione sua string de conexão do MongoDB:
+Configure o arquivo `.env` adicionando a string de conexao do MongoDB:
+
 ```env
-MONGODB_URI=sua_string_de_conexao_mongodb
+MONGODB_URI=sua_string_de_conexao
 ```
 
-4. Execute o servidor de desenvolvimento:
+Inicie o projeto em modo desenvolvimento:
+
 ```bash
 npm run dev
 ```
 
-5. Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
+Acesse a aplicacao em `http://localhost:3000`.
 
-## Available Scripts
+## Scripts Disponiveis
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server on port 3000 |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run type-check` | Run TypeScript type checking |
-| `npm test` | Run unit and integration tests |
-| `npm run test:e2e` | Run end-to-end tests |
+| Script               | Descricao                                 |
+| -------------------- | ----------------------------------------- |
+| `npm run dev`        | Inicia o servidor de desenvolvimento      |
+| `npm run build`      | Gera build de producao                    |
+| `npm start`          | Sobe o servidor em modo producao          |
+| `npm run lint`       | Executa ESLint                            |
+| `npm run type-check` | Roda o verificador de types do TypeScript |
+| `npm test`           | Executa testes unitarios e de integracao  |
+| `npm run test:e2e`   | Roda testes end-to-end                    |
+
+## Variaveis de Ambiente
+
+| Variavel          | Descricao                                       | Obrigatorio |
+| ----------------- | ----------------------------------------------- | ----------- |
+| `MONGODB_URI`     | String de conexao com o MongoDB                 | Sim         |
+| `NODE_ENV`        | Define ambiente (`development` ou `production`) | Nao         |
+| `FRONTEND_ORIGIN` | URL usada para configurar CORS                  | Nao         |
+| `PORT`            | Porta utilizada pelo servidor                   | Nao         |
+
+Consulte `.env.example` para ver o modelo completo.
 
 ## Estrutura do Projeto
 
 ```
-wedding-organizer/
-├── src/
-│   ├── app/                   # Next.js App Router
-│   │   ├── project/[projectId]/  # Dynamic project routes
-│   │   │   ├── guests/       # Guest management page
-│   │   │   ├── budgets/      # Budget management page
-│   │   │   └── page.tsx      # Project dashboard
-│   │   └── page.tsx          # Landing page
-│   ├── actions/              # Server Actions
-│   ├── components/           # React components
-│   │   ├── budgets/         # Budget components
-│   │   ├── guests/          # Guest components
-│   │   ├── layout/          # Header, navigation
-│   │   ├── projects/        # Project components
-│   │   └── providers/       # Context providers
-│   ├── hooks/               # Custom React hooks
-│   ├── lib/                 # Utilities and database
-│   ├── models/              # Mongoose models
-│   ├── schemas/             # Zod validation schemas
-│   └── types/               # TypeScript type definitions
-└── public/                  # Static assets
+src/
+  app/
+    project/[projectId]/
+      guests/          # Pagina de convidados
+      budgets/         # Pagina de orcamentos
+      layout.tsx       # Provider e protecao do projeto
+      page.tsx         # Painel principal do projeto
+    page.tsx           # Landing page
+    not-found.tsx      # Tratamento de rotas invalidas
+  actions/             # Server Actions centralizadas
+  components/          # Componentes reutilizaveis
+    guests/            # Form, lista e cards de convidados
+    budgets/           # Componentes relacionados a orcamentos
+    projects/          # Criacao e contexto de projetos
+  hooks/               # Hooks personalizados
+  lib/                 # Conexoes e helpers (ex: MongoDB)
+  models/              # Modelos Mongoose
+  schemas/             # Validacoes Zod
+  types/               # Tipos compartilhados
 ```
 
-## Environment Variables
+## Observacoes
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `MONGODB_URI` | MongoDB connection string | Yes |
-| `NODE_ENV` | Environment (development/production) | No |
-| `FRONTEND_ORIGIN` | Frontend URL for CORS | No |
-| `PORT` | Custom port (defaults to 3000) | No |
+- O projeto prioriza tipagem fim a fim, evitando uso de `any` e garantindo validacao no cliente e servidor.
+- A interface foi pensada para times que compartilham tarefas; use o link de compartilhamento para convidar parceiros e fornecedores.
+- Para deploy, basta apontar sua plataforma favorita de Node.js (Vercel, Railway, Render etc.) para o comando `npm run build` seguido de `npm start`, garantindo que `MONGODB_URI` esteja configurada.
 
-See `.env.example` for a complete template.
+## Licenca
 
-## Deployment
-
-### Deploy to Vercel
-
-1. Click the "Deploy with Vercel" button above, or:
-
-2. Install Vercel CLI:
-```bash
-npm install -g vercel
-```
-
-3. Deploy:
-```bash
-vercel
-```
-
-4. Add environment variables in Vercel dashboard:
-   - `MONGODB_URI`: Your MongoDB connection string
-
-### Deploy to Other Platforms
-
-This is a standard Next.js application and can be deployed to any platform that supports Node.js:
-- Vercel (recommended)
-- Netlify
-- Railway
-- Render
-- AWS Amplify
-
-Ensure you set the `MONGODB_URI` environment variable in your deployment platform.
-
-## Architecture Highlights
-
-- **Type Safety:** End-to-end TypeScript with strict mode enabled
-- **Server Actions:** Type-safe RPC-style API with `'use server'` directive
-- **React Query:** Automatic caching, revalidation, and optimistic updates
-- **Validation:** Runtime validation with Zod on both client and server
-- **Error Handling:** Comprehensive error boundaries with retry functionality
-- **Security:** CSP headers, HSTS, XSS protection, input sanitization
-- **Performance:** React Suspense, code splitting, optimized bundle size
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## License
-
-MIT License - feel free to use this project for your own wedding planning needs.
-
-## Acknowledgments
-
-Built with modern web technologies and best practices for type safety, performance, and user experience.
-
----
-
-**Made with ❤️ for couples planning their perfect day**
+Distribuido sob licenca MIT. Sinta-se livre para adaptar o WedPlan ao casamento da sua vida (ou ao de seus clientes).
