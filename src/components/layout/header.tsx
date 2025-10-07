@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useProject } from '@/hooks/use-project';
+import { memo } from 'react';
 
-export function Header() {
+function HeaderComponent() {
   const pathname = usePathname();
 
   const projectIdMatch = pathname.match(/^\/project\/([^/]+)/);
@@ -41,3 +42,5 @@ export function Header() {
     </header>
   );
 }
+
+export const Header = memo(HeaderComponent);
