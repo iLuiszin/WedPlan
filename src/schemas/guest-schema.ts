@@ -8,16 +8,21 @@ export const guestRoleEnum = z.enum(GUEST_ROLES);
 
 export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId');
 
-export const createGuestSchema = z.object({
+const baseGuestSchema = z.object({
   projectId: objectIdSchema,
   firstName: z.string().trim().min(1, 'First name required').max(100),
   lastName: z.string().trim().min(1, 'Last name required').max(100),
-  category: guestCategoryEnum.default('both'),
-  role: guestRoleEnum.default('guest'),
+  category: guestCategoryEnum,
+  role: guestRoleEnum,
   partnerId: objectIdSchema.nullable().optional(),
 });
 
-export const updateGuestSchema = createGuestSchema.partial().extend({
+export const createGuestSchema = baseGuestSchema.extend({
+  category: guestCategoryEnum.default('both'),
+  role: guestRoleEnum.default('guest'),
+});
+
+export const updateGuestSchema = baseGuestSchema.partial().extend({
   _id: objectIdSchema,
 });
 

@@ -72,7 +72,7 @@ export function GuestList() {
         {!filteredGuests || filteredGuests.length === 0 ? (
           <p className="text-gray-500 text-center py-8">Nenhum convidado encontrado</p>
         ) : (
-          <div className="space-y-3">
+          <div className="max-h-[600px] overflow-y-auto space-y-3 pr-2">
             {filteredGuests.map((guest) => (
               <GuestItem key={guest._id.toString()} guest={guest} />
             ))}
