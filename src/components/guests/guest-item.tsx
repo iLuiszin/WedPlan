@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useUpdateGuest, useDeleteGuest } from '@/hooks/use-guests';
+import { useUpdateGuest, useDeleteGuest, useLinkPartners, useUnlinkPartner, useGuests } from '@/hooks/use-guests';
+import { useProjectContext } from '@/components/projects/project-context';
 import { CATEGORY_LABELS, ROLE_LABELS, GUEST_CATEGORIES } from '@/lib/constants';
 import type { IGuest } from '@/models/guest';
 import type { GuestCategory, GuestRole } from '@/schemas/guest-schema';
@@ -11,12 +12,17 @@ interface GuestItemProps {
 }
 
 export function GuestItem({ guest }: GuestItemProps) {
+  const { projectId } = useProjectContext();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedFirstName, setEditedFirstName] = useState(guest.firstName);
   const [editedLastName, setEditedLastName] = useState(guest.lastName);
+  const [isLinkingPartner, setIsLinkingPartner] = useState(false);
 
+  const { data: allGuests } = useGuests(projectId);
   const updateGuest = useUpdateGuest();
   const deleteGuest = useDeleteGuest();
+  const linkPartners = useLinkPartners();
+  const unlinkPartner = useUnlinkPartner();
 
   const handleNameSave = async () => {
     if (!editedFirstName.trim() || !editedLastName.trim()) {
@@ -62,6 +68,17 @@ export function GuestItem({ guest }: GuestItemProps) {
     }
   };
 
+  const handleLinkPartner = async (partnerId: string) => {
+    await linkPartners.mutateAsync({ aId: guest._id.toString(), bId: partnerId });
+    setIsLinkingPartner(false);
+  };
+
+  const handleUnlinkPartner = async () => {
+    if (confirm('Deseja desvincular este casal?')) {
+      await unlinkPartner.mutateAsync(guest._id.toString());
+    }
+  };
+
   const getCategoryColor = (category: GuestCategory) => {
     switch (category) {
       case GUEST_CATEGORIES.GROOM:
@@ -74,6 +91,11 @@ export function GuestItem({ guest }: GuestItemProps) {
         return 'bg-gray-500 hover:bg-gray-600';
     }
   };
+
+  const partner = allGuests?.find((g) => g._id.toString() === guest.partnerId?.toString());
+  const availablePartners = allGuests?.filter(
+    (g) => g._id.toString() !== guest._id.toString() && !g.partnerId
+  );
 
   return (
     <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
@@ -144,6 +166,51 @@ export function GuestItem({ guest }: GuestItemProps) {
           <option value="groomsman">{ROLE_LABELS.groomsman}</option>
           <option value="bridesmaid">{ROLE_LABELS.bridesmaid}</option>
         </select>
+
+        {/* Partner Link */}
+        {partner ? (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-gray-600">
+              💑 {partner.firstName} {partner.lastName}
+            </span>
+            <button
+              onClick={handleUnlinkPartner}
+              className="text-red-500 hover:text-red-700 text-xs"
+              title="Desvincular casal"
+            >
+              ✕
+            </button>
+          </div>
+        ) : isLinkingPartner ? (
+          <div className="flex items-center gap-2">
+            <select
+              onChange={(e) => e.target.value && handleLinkPartner(e.target.value)}
+              className="px-2 py-1 border border-gray-300 rounded text-sm"
+              defaultValue=""
+            >
+              <option value="">Selecione...</option>
+              {availablePartners?.map((g) => (
+                <option key={g._id.toString()} value={g._id.toString()}>
+                  {g.firstName} {g.lastName}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setIsLinkingPartner(false)}
+              className="text-gray-500 hover:text-gray-700 text-xs"
+            >
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsLinkingPartner(true)}
+            className="px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded"
+            title="Vincular como casal"
+          >
+            + Casal
+          </button>
+        )}
       </div>
 
       {/* Delete Button */}
