@@ -14,18 +14,18 @@ export function Header() {
 
   return (
     <header className="border-b bg-white">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-4 md:py-6">
         {projectId && project ? (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
             <Link href="/" className="hover:opacity-80 transition">
-              <h1 className="text-2xl font-bold text-primary">Wedding Organizer</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-primary">WedPlan</h1>
             </Link>
-            <div className="text-right">
-              <p className="text-xl font-semibold text-gray-800">
+            <div className="text-center sm:text-right">
+              <p className="text-base md:text-xl font-semibold text-gray-800">
                 {project.brideFirstName} & {project.groomFirstName}
               </p>
               {project.weddingDate && (
-                <p className="text-sm text-gray-600">
+                <p className="text-xs md:text-sm text-gray-600">
                   {new Date(project.weddingDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                 </p>
               )}
@@ -33,8 +33,8 @@ export function Header() {
           </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-primary">Wedding Organizer</h1>
-            <p className="text-sm text-gray-600 mt-1">Plan your perfect day</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-primary">WedPlan</h1>
+            <p className="text-sm text-gray-600 mt-1">Planeje seu dia perfeito</p>
           </>
         )}
       </div>

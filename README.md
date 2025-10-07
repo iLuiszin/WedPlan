@@ -1,44 +1,44 @@
-# Wedding Organizer
+# WedPlan
 
-Modern wedding planning application built with Next.js 15, TypeScript, and MongoDB. Manage multiple wedding projects, track guests, and organize budgets all in one place.
+Aplicação moderna de planejamento de casamento construída com Next.js 15, TypeScript e MongoDB. Gerencie múltiplos projetos de casamento, acompanhe convidados e organize orçamentos em um só lugar.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/wedding-organizer)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/iLuiszin/wedding-organizer)
 
-## Features
+## Funcionalidades
 
-### 🎯 Multi-Project Management
-- Create and manage multiple wedding projects
-- Shareable project URLs for easy collaboration
-- Complete data isolation between projects
-- Project dashboard with couple information and wedding date
+### 🎯 Gerenciamento Multi-Projetos
+- Crie e gerencie múltiplos projetos de casamento
+- URLs compartilháveis para colaboração fácil
+- Isolamento completo de dados entre projetos
+- Painel do projeto com informações do casal e data do casamento
 
-### 👥 Guest Management
-- Full CRUD operations for wedding guests
-- Partner linking with bidirectional relationships
-- Category assignment: Groom's side, Bride's side, or Both
-- Role designation: Guest, Groomsman, or Bridesmaid
-- Real-time statistics (total guests, couples, wedding party)
-- Inline editing and click-to-cycle categories
-- Search and filter by name or category
-- Export to CSV (Excel-compatible with UTF-8 BOM)
-- Import/Export via JSON with metadata
+### 👥 Gerenciamento de Convidados
+- Operações CRUD completas para convidados
+- Vinculação de parceiros com relacionamentos bidirecionais
+- Atribuição de categoria: Lado do noivo, lado da noiva, ou ambos
+- Designação de função: Convidado, padrinho ou madrinha
+- Estatísticas em tempo real (total de convidados, casais, padrinhos)
+- Edição inline e categorias clicáveis
+- Busca e filtro por nome ou categoria
+- Exportação para CSV (compatível com Excel UTF-8 BOM)
+- Importação/Exportação via JSON com metadados
 
-### 💰 Budget Management
-- Track budgets from multiple venues
-- Inline item management per budget
-- Automatic total calculations
-- Grand total across all budgets
-- Sort by price, name, or date
-- Search and filter by venue name
-- Brazilian Real (R$) currency formatting
+### 💰 Gerenciamento de Orçamentos
+- Acompanhe orçamentos de múltiplos locais
+- Gerenciamento inline de itens por orçamento
+- Cálculos automáticos de totais
+- Total geral entre todos os orçamentos
+- Ordenação por preço, nome ou data
+- Busca e filtro por nome do local
+- Formatação de moeda em Real Brasileiro (R$)
 
-### ✨ User Experience
-- Modern, responsive design with Tailwind CSS
-- Real-time updates with optimistic UI
-- Toast notifications for all operations
-- Error boundaries with retry functionality
-- Loading states and smooth transitions
-- Mobile-friendly interface
+### ✨ Experiência do Usuário
+- Design moderno e responsivo com Tailwind CSS
+- Atualizações em tempo real com UI otimista
+- Notificações toast para todas as operações
+- Error boundaries com funcionalidade de retry
+- Estados de carregamento e transições suaves
+- Interface amigável para dispositivos móveis
 
 ## Tech Stack
 
@@ -52,42 +52,42 @@ Modern wedding planning application built with Next.js 15, TypeScript, and Mongo
 - **UI Components:** Custom components with shadcn/ui patterns
 - **Notifications:** Sonner
 
-## Getting Started
+## Começando
 
-### Prerequisites
+### Pré-requisitos
 
-- Node.js 20 or higher
-- MongoDB Atlas account or local MongoDB instance
+- Node.js 20 ou superior
+- Conta MongoDB Atlas ou instância local do MongoDB
 
-### Installation
+### Instalação
 
-1. Clone the repository:
+1. Clone o repositório:
 ```bash
-git clone https://github.com/yourusername/wedding-organizer.git
+git clone https://github.com/iLuiszin/wedding-organizer.git
 cd wedding-organizer
 ```
 
-2. Install dependencies:
+2. Instale as dependências:
 ```bash
 npm install
 ```
 
-3. Configure environment variables:
+3. Configure as variáveis de ambiente:
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your MongoDB connection string:
+Edite o arquivo `.env` e adicione sua string de conexão do MongoDB:
 ```env
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=sua_string_de_conexao_mongodb
 ```
 
-4. Run the development server:
+4. Execute o servidor de desenvolvimento:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
 
 ## Available Scripts
 
@@ -101,7 +101,7 @@ npm run dev
 | `npm test` | Run unit and integration tests |
 | `npm run test:e2e` | Run end-to-end tests |
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 wedding-organizer/

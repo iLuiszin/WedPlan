@@ -10,8 +10,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Wedding Organizer',
-  description: 'Manage your wedding guests and budgets',
+  title: 'WedPlan',
+  description: 'Gerencie seus convidados e orçamentos de casamento',
 };
 
 export default function RootLayout({
