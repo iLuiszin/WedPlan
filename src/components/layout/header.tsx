@@ -26,7 +26,7 @@ export function Header() {
               </p>
               {project.weddingDate && (
                 <p className="text-sm text-gray-600">
-                  {new Date(project.weddingDate).toLocaleDateString('pt-BR')}
+                  {new Date(project.weddingDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                 </p>
               )}
             </div>

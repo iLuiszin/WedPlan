@@ -29,7 +29,7 @@ export function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps)
   const onSubmit = async (data: CreateProjectInput) => {
     const project = await createProject.mutateAsync({
       ...data,
-      weddingDate: weddingDate ? new Date(weddingDate) : null,
+      weddingDate: weddingDate ? new Date(weddingDate + 'T12:00:00.000Z') : null,
     });
 
     reset();

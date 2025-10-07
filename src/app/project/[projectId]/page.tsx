@@ -33,6 +33,7 @@ export default function ProjectPage() {
         day: '2-digit',
         month: 'long',
         year: 'numeric',
+        timeZone: 'UTC',
       })
     : 'Data não definida';
 
