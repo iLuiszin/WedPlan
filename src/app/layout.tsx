@@ -17,6 +17,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'WedPlan',
   description: 'Gerencie seus convidados e orçamentos de casamento',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
