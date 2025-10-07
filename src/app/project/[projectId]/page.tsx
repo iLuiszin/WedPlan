@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useProjectContext } from '@/components/projects/project-context';
 import { useProject } from '@/hooks/use-project';
 import { ShareableUrl } from '@/components/projects/shareable-url';
+import { ProjectDetailsCard } from '@/components/projects/project-details-card';
 
 export default function ProjectPage() {
   const { projectId } = useProjectContext();
@@ -28,40 +29,9 @@ export default function ProjectPage() {
     );
   }
 
-  const formattedDate = project.weddingDate
-    ? new Date(project.weddingDate).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        timeZone: 'UTC',
-      })
-    : 'Data não definida';
-
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-lg p-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            {project.brideFirstName} & {project.groomFirstName}
-          </h1>
-          <p className="text-lg text-gray-600">{formattedDate}</p>
-        </div>
-
-        <div className="mt-8 grid md:grid-cols-2 gap-4">
-          <div className="p-4 bg-pink-50 rounded-lg">
-            <p className="text-sm text-gray-600">Noiva</p>
-            <p className="text-lg font-semibold text-gray-800">
-              {project.brideFirstName} {project.brideLastName}
-            </p>
-          </div>
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-600">Noivo</p>
-            <p className="text-lg font-semibold text-gray-800">
-              {project.groomFirstName} {project.groomLastName}
-            </p>
-          </div>
-        </div>
-      </div>
+      <ProjectDetailsCard project={project} />
 
       <ShareableUrl projectId={projectId} />
 
