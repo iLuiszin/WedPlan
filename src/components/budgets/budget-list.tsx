@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo } from 'react';
 import { useBudgets } from '@/hooks/use-budgets';
@@ -22,7 +22,18 @@ export function BudgetList() {
   };
 
   const getBudgetTotal = (budget: IBudget): number => {
-    return budget.items.reduce((sum: number, item) => sum + item.amountCents, 0);
+    const itemsTotal = (budget.items ?? []).reduce((sum, item) => sum + item.amountCents, 0);
+
+    const categoriesTotal = (budget.categories ?? []).reduce((sectionSum, category) => {
+      return (
+        sectionSum +
+        (category.providers ?? []).reduce((providerSum, provider) => {
+          return providerSum + provider.amountCents;
+        }, 0)
+      );
+    }, 0);
+
+    return itemsTotal + categoriesTotal;
   };
 
   const filteredAndSortedBudgets = useMemo(() => {

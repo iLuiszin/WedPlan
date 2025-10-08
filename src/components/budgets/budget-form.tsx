@@ -39,7 +39,10 @@ export function BudgetForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg p-6 shadow-sm mb-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="bg-white rounded-lg p-6 shadow-sm mb-6 flex flex-col"
+    >
       <h3 className="text-lg font-semibold mb-4">Adicionar Orçamento</h3>
 
       <div className="grid grid-cols-1 gap-4">
@@ -64,9 +67,9 @@ export function BudgetForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed self-end"
       >
-        {isSubmitting ? 'Adicionando...' : 'Adicionar Orçamento'}
+        {isSubmitting ? 'Adicionando...' : 'Adicionar'}
       </button>
     </form>
   );
