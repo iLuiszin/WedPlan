@@ -1,20 +1,20 @@
-import { Schema, model, models, type Types } from 'mongoose';
+﻿import { Schema, model, models, type Types } from 'mongoose';
 
 export interface IBudgetItem {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
   title: string;
   amountCents: number;
 }
 
 export interface ICategoryField {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
   key: string;
   value: string;
   fieldType: 'text' | 'number' | 'currency' | 'date';
 }
 
 export interface IProvider {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
   name: string;
   fields: ICategoryField[];
   notes: string;
@@ -22,14 +22,14 @@ export interface IProvider {
 }
 
 export interface ICategory {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
   name: string;
   providers: IProvider[];
 }
 
 export interface IBudget {
-  _id: Types.ObjectId;
-  projectId: Types.ObjectId;
+  _id: Types.ObjectId | string;
+  projectId: Types.ObjectId | string;
   venueName: string;
   items: IBudgetItem[];
   categories: ICategory[];

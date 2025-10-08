@@ -1,14 +1,18 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
-import { FIELD_TYPES, FIELD_TYPE_LABELS } from '@/lib/constants';
+import { Types } from 'mongoose';
+import { FIELD_TYPES, FIELD_TYPE_LABELS, type FieldType } from '@/lib/constants';
 import type { ICategoryField } from '@/models/budget';
-import type { FieldType } from '@/lib/constants';
 
 interface FieldEditorProps {
   fields: ICategoryField[];
   onChange: (fields: ICategoryField[]) => void;
 }
+
+const fieldTypeEntries = Object.entries(FIELD_TYPE_LABELS) as Array<
+  [FieldType, (typeof FIELD_TYPE_LABELS)[FieldType]]
+>;
 
 export function FieldEditor({ fields, onChange }: FieldEditorProps) {
   const [newFieldKey, setNewFieldKey] = useState('');
@@ -16,44 +20,64 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
   const [newFieldType, setNewFieldType] = useState<FieldType>(FIELD_TYPES.TEXT);
 
   const handleAddField = () => {
-    if (!newFieldKey.trim()) return;
+    const trimmedKey = newFieldKey.trim();
+    if (!trimmedKey) {
+      return;
+    }
 
-    const newField: ICategoryField = {
-      _id: new Date().getTime().toString(16).padStart(24, '0') as any,
-      key: newFieldKey.trim(),
+    const field: ICategoryField = {
+      _id: new Types.ObjectId(new Date().getTime().toString(16).padStart(24, '0')),
+      key: trimmedKey,
       value: newFieldValue.trim(),
       fieldType: newFieldType,
     };
 
-    onChange([...fields, newField]);
+    onChange([...fields, field]);
     setNewFieldKey('');
     setNewFieldValue('');
     setNewFieldType(FIELD_TYPES.TEXT);
   };
 
   const handleUpdateField = (index: number, updates: Partial<ICategoryField>) => {
-    const updated = fields.map((field, i) => (i === index ? { ...field, ...updates } : field));
-    onChange(updated);
+    const nextFields = fields.map((field, currentIndex) =>
+      currentIndex === index ? { ...field, ...updates } : field
+    );
+    onChange(nextFields);
   };
 
   const handleDeleteField = (index: number) => {
-    onChange(fields.filter((_, i) => i !== index));
+    onChange(fields.filter((_, currentIndex) => currentIndex !== index));
+  };
+
+  const handleTypeSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    if (
+      value === FIELD_TYPES.TEXT ||
+      value === FIELD_TYPES.NUMBER ||
+      value === FIELD_TYPES.CURRENCY ||
+      value === FIELD_TYPES.DATE
+    ) {
+      setNewFieldType(value);
+    }
   };
 
   const formatFieldValue = (field: ICategoryField): string => {
-    if (!field.value) return '-';
+    if (!field.value) {
+      return '-';
+    }
 
     switch (field.fieldType) {
-      case FIELD_TYPES.CURRENCY:
+      case FIELD_TYPES.CURRENCY: {
+        const numeric = Number.parseFloat(field.value);
         return new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
-        }).format(parseFloat(field.value) || 0);
-      case FIELD_TYPES.DATE:
-        return new Date(field.value).toLocaleDateString('pt-BR');
-      case FIELD_TYPES.NUMBER:
-        return field.value;
-      case FIELD_TYPES.TEXT:
+        }).format(Number.isNaN(numeric) ? 0 : numeric);
+      }
+      case FIELD_TYPES.DATE: {
+        const date = new Date(field.value);
+        return Number.isNaN(date.getTime()) ? field.value : date.toLocaleDateString('pt-BR');
+      }
       default:
         return field.value;
     }
@@ -78,9 +102,9 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
               <div className="flex gap-2 shrink-0">
                 <button
                   onClick={() => {
-                    const newValue = prompt(`Editar "${field.key}"`, field.value);
-                    if (newValue !== null) {
-                      handleUpdateField(index, { value: newValue });
+                    const response = prompt(`Editar "${field.key}"`, field.value);
+                    if (response !== null) {
+                      handleUpdateField(index, { value: response });
                     }
                   }}
                   className="text-xs text-blue-600 hover:text-blue-800"
@@ -106,28 +130,29 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
             type="text"
             placeholder="Nome do campo"
             value={newFieldKey}
-            onChange={(e) => setNewFieldKey(e.target.value)}
+            onChange={(event) => setNewFieldKey(event.target.value)}
             className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <input
             type="text"
             placeholder="Valor"
             value={newFieldValue}
-            onChange={(e) => setNewFieldValue(e.target.value)}
+            onChange={(event) => setNewFieldValue(event.target.value)}
             className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <select
             value={newFieldType}
-            onChange={(e) => setNewFieldType(e.target.value as FieldType)}
+            onChange={handleTypeSelect}
             className="px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            {Object.entries(FIELD_TYPE_LABELS).map(([type, label]) => (
+            {fieldTypeEntries.map(([type, label]) => (
               <option key={type} value={type}>
                 {label}
               </option>
             ))}
           </select>
           <button
+            type="button"
             onClick={handleAddField}
             className="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-primary-dark whitespace-nowrap"
           >
