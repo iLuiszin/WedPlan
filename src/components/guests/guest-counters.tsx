@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useGuests } from '@/hooks/use-guests';
 import { useProjectContext } from '@/components/projects/project-context';
+import { useModal } from '@/contexts/modal-context';
 import { GUEST_CATEGORIES, GUEST_ROLES } from '@/lib/constants';
 import { exportGuestsAsCSVAction } from '@/actions/export-actions';
 
@@ -10,6 +11,7 @@ export function GuestCounters() {
   const { projectId } = useProjectContext();
   const { data: guests } = useGuests(projectId);
   const [isExporting, setIsExporting] = useState(false);
+  const { showAlert } = useModal();
 
   const handleExportCSV = async () => {
     setIsExporting(true);
@@ -26,11 +28,11 @@ export function GuestCounters() {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       } else {
-        alert(`Erro ao exportar: ${result.error}`);
+        await showAlert({ message: `Erro ao exportar: ${result.error}` });
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert('Erro ao exportar convidados');
+      await showAlert({ message: 'Erro ao exportar convidados' });
     } finally {
       setIsExporting(false);
     }

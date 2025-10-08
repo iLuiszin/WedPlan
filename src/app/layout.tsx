@@ -4,6 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { ToastProvider } from '@/components/providers/toast-provider';
+import { ModalProvider } from '@/contexts/modal-context';
 import { Header } from '@/components/layout/header';
 import { Nav } from '@/components/layout/nav';
 import './globals.css';
@@ -31,12 +32,14 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         <QueryProvider>
-          <div className="min-h-screen bg-gradient-to-br from-primary to-secondary">
-            <Header />
-            <Nav />
-            <main className="container mx-auto px-4 py-8">{children}</main>
-          </div>
-          <ToastProvider />
+          <ModalProvider>
+            <div className="min-h-screen bg-gradient-to-br from-primary to-secondary">
+              <Header />
+              <Nav />
+              <main className="container mx-auto px-4 py-8">{children}</main>
+            </div>
+            <ToastProvider />
+          </ModalProvider>
         </QueryProvider>
         <Analytics />
         <SpeedInsights />

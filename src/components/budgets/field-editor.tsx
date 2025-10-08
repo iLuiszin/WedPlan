@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 import { Types } from 'mongoose';
+import { useModal } from '@/contexts/modal-context';
 import { FIELD_TYPES, FIELD_TYPE_LABELS, type FieldType } from '@/lib/constants';
 import type { ICategoryField } from '@/models/budget';
 
@@ -20,6 +21,7 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
   const [newFieldType, setNewFieldType] = useState<FieldType>(FIELD_TYPES.TEXT);
   const [isExpense, setIsExpense] = useState(false);
   const checkboxId = useId();
+  const { showPrompt } = useModal();
 
   const handleExpenseChange = (checked: boolean) => {
     setIsExpense(checked);
@@ -126,43 +128,54 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
           {fields.map((field, index) => (
             <div
               key={field._id.toString()}
-              className="flex flex-col sm:flex-row sm:items-center gap-2 p-2 bg-gray-50 rounded"
+              className="p-2 bg-gray-50 rounded"
             >
-              <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium text-gray-700">{field.key}:</span>{' '}
-                <span className="text-sm text-gray-900">{formatFieldValue(field)}</span>
-                <span className="ml-2 text-xs text-gray-500">
-                  ({FIELD_TYPE_LABELS[field.fieldType]})
-                </span>
+              {/* Row 1: Field name + Value (left) | Badge (right) */}
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium text-gray-700">{field.key}:</span>{' '}
+                  <span className="text-sm text-gray-900">{formatFieldValue(field)}</span>
+                </div>
                 {field.itemType === 'expense' && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500 text-white shrink-0">
                     Despesa
                   </span>
                 )}
                 {field.itemType === 'information' && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500 text-white shrink-0">
                     Info
                   </span>
                 )}
               </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={() => {
-                    const response = prompt(`Editar "${field.key}"`, field.value);
-                    if (response !== null) {
-                      handleUpdateField(index, { value: response });
-                    }
-                  }}
-                  className="text-xs text-blue-600 hover:text-blue-800"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDeleteField(index)}
-                  className="text-xs text-red-600 hover:text-red-800"
-                >
-                  Remover
-                </button>
+
+              {/* Row 2: (Type) (left) | Edit + Remove (right) */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs text-gray-500">
+                  ({FIELD_TYPE_LABELS[field.fieldType]})
+                </span>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={async () => {
+                      const response = await showPrompt({
+                        title: 'Editar Campo',
+                        message: `Editar "${field.key}"`,
+                        defaultValue: field.value,
+                      });
+                      if (response !== null) {
+                        handleUpdateField(index, { value: response });
+                      }
+                    }}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteField(index)}
+                    className="text-xs text-red-600 hover:text-red-800"
+                  >
+                    Remover
+                  </button>
+                </div>
               </div>
             </div>
           ))}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useUnlinkPartner } from '@/hooks/use-guests';
+import { useModal } from '@/contexts/modal-context';
 import { CATEGORY_LABELS, ROLE_LABELS, GUEST_CATEGORIES } from '@/lib/constants';
 import type { IGuest } from '@/models/guest';
 import type { GuestCategory } from '@/schemas/guest-schema';
@@ -12,9 +13,16 @@ interface CoupleCardProps {
 
 export function CoupleCard({ partnerA, partnerB }: CoupleCardProps) {
   const unlinkPartner = useUnlinkPartner();
+  const { showConfirm } = useModal();
 
   const handleUnlink = async () => {
-    if (confirm(`Deseja desvincular o casal ${partnerA.firstName} & ${partnerB.firstName}?`)) {
+    const confirmed = await showConfirm({
+      message: `Deseja desvincular o casal ${partnerA.firstName} & ${partnerB.firstName}?`,
+      variant: 'danger',
+      confirmText: 'Desvincular',
+    });
+
+    if (confirmed) {
       await unlinkPartner.mutateAsync(partnerA._id.toString());
     }
   };

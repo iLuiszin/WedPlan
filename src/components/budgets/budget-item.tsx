@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useUpdateBudget, useDeleteBudget } from '@/hooks/use-budgets';
+import { useModal } from '@/contexts/modal-context';
 import { BudgetCategory } from './budget-category';
 import type { IBudget, ICategory } from '@/models/budget';
 
@@ -15,6 +16,7 @@ export function BudgetItem({ budget }: BudgetItemProps) {
 
   const updateBudget = useUpdateBudget();
   const deleteBudget = useDeleteBudget();
+  const { showConfirm } = useModal();
 
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -67,7 +69,13 @@ export function BudgetItem({ budget }: BudgetItemProps) {
   };
 
   const handleDeleteBudget = async () => {
-    if (confirm('Tem certeza que deseja excluir este orçamento?')) {
+    const confirmed = await showConfirm({
+      message: 'Tem certeza que deseja excluir este orçamento?',
+      variant: 'danger',
+      confirmText: 'Excluir',
+    });
+
+    if (confirmed) {
       await deleteBudget.mutateAsync(budget._id.toString());
     }
   };

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useUpdateProject } from '@/hooks/use-project';
+import { useModal } from '@/contexts/modal-context';
 import type { IProject } from '@/models/project';
 
 interface ProjectDetailsCardProps {
@@ -24,10 +25,11 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
   );
 
   const updateProject = useUpdateProject();
+  const { showAlert } = useModal();
 
   const handleBrideSave = async () => {
     if (!brideFirstName.trim() || !brideLastName.trim()) {
-      alert('Nome e sobrenome da noiva são obrigatórios');
+      await showAlert({ message: 'Nome e sobrenome da noiva são obrigatórios' });
       return;
     }
 
@@ -47,7 +49,7 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
 
   const handleGroomSave = async () => {
     if (!groomFirstName.trim() || !groomLastName.trim()) {
-      alert('Nome e sobrenome do noivo são obrigatórios');
+      await showAlert({ message: 'Nome e sobrenome do noivo são obrigatórios' });
       return;
     }
 

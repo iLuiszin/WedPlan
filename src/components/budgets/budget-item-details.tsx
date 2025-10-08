@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useModal } from '@/contexts/modal-context';
 import { FieldEditor } from './field-editor';
 import type { IProvider } from '@/models/budget';
 
@@ -16,6 +17,7 @@ export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDe
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [editedNotes, setEditedNotes] = useState(provider.notes);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { showConfirm } = useModal();
 
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -44,8 +46,14 @@ export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDe
     setIsEditingNotes(false);
   };
 
-  const handleDelete = () => {
-    if (confirm(`Tem certeza que deseja remover "${provider.name}"?`)) {
+  const handleDelete = async () => {
+    const confirmed = await showConfirm({
+      message: `Tem certeza que deseja remover "${provider.name}"?`,
+      variant: 'danger',
+      confirmText: 'Remover',
+    });
+
+    if (confirmed) {
       onDelete();
     }
   };
