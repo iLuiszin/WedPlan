@@ -37,7 +37,7 @@ function Brand({ titleClassName = brandTitleClass }: BrandProps) {
           alt={brandConfig.image.alt}
           width={brandConfig.image.width}
           height={brandConfig.image.height}
-          className="h-12 w-12 md:h-14 md:w-14"
+          className="h-12 w-12 md:h-14 md:w-14 "
           priority
         />
         <span className="-ml-1 mt-1.5">{brandConfig.label}</span>
@@ -77,8 +77,10 @@ function HeaderComponent() {
           )
         ) : (
           <>
-            <Brand titleClassName={brandTitleLargeClass} />
-            <p className="text-sm text-gray-600 mt-1 text-center">Planeje seu dia perfeito</p>
+            <div className="flex flex-col items-center text-center">
+              <Brand titleClassName={brandTitleLargeClass} />
+              <p className="text-sm text-gray-600 mt-1 text-center">Planeje seu dia perfeito</p>
+            </div>
           </>
         )}
       </div>

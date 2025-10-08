@@ -11,6 +11,7 @@ export interface ICategoryField {
   key: string;
   value: string;
   fieldType: 'text' | 'number' | 'currency' | 'date';
+  itemType: 'information' | 'expense';
 }
 
 export interface IProvider {
@@ -18,7 +19,7 @@ export interface IProvider {
   name: string;
   fields: ICategoryField[];
   notes: string;
-  amountCents: number;
+  amountCents?: number;
 }
 
 export interface ICategory {
@@ -30,7 +31,6 @@ export interface ICategory {
 export interface IBudget {
   _id: Types.ObjectId | string;
   projectId: Types.ObjectId | string;
-  venueName: string;
   items: IBudgetItem[];
   categories: ICategory[];
   createdAt: Date;
@@ -55,6 +55,12 @@ const categoryFieldSchema = new Schema<ICategoryField>(
       enum: ['text', 'number', 'currency', 'date'],
       default: 'text',
     },
+    itemType: {
+      type: String,
+      required: true,
+      enum: ['information', 'expense'],
+      default: 'information',
+    },
   },
   { _id: true }
 );
@@ -64,7 +70,7 @@ const providerSchema = new Schema<IProvider>(
     name: { type: String, required: true, trim: true, maxlength: 200 },
     fields: { type: [categoryFieldSchema], default: [] },
     notes: { type: String, trim: true, maxlength: 1000, default: '' },
-    amountCents: { type: Number, required: true, min: 0, default: 0 },
+    amountCents: { type: Number, min: 0, default: 0 },
   },
   { _id: true }
 );
@@ -80,7 +86,6 @@ const categorySchema = new Schema<ICategory>(
 const budgetSchema = new Schema<IBudget>(
   {
     projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true, index: true },
-    venueName: { type: String, required: true, trim: true, maxlength: 200 },
     items: { type: [budgetItemSchema], default: [] },
     categories: { type: [categorySchema], default: [] },
   },
@@ -94,12 +99,11 @@ const budgetSchema = new Schema<IBudget>(
 budgetSchema.virtual('totalCents').get(function () {
   const itemsTotal = this.items.reduce((sum, item) => sum + item.amountCents, 0);
   const categoriesTotal = this.categories.reduce((sum, category) => {
-    return sum + category.providers.reduce((provSum, provider) => provSum + provider.amountCents, 0);
+    return sum + category.providers.reduce((provSum, provider) => provSum + (provider.amountCents ?? 0), 0);
   }, 0);
   return itemsTotal + categoriesTotal;
 });
 
-budgetSchema.index({ projectId: 1, venueName: 1 });
 budgetSchema.index({ projectId: 1, createdAt: -1 });
 
 export const BudgetModel = models.Budget || model<IBudget>('Budget', budgetSchema);

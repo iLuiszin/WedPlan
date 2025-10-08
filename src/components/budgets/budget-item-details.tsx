@@ -4,17 +4,15 @@ import { useState } from 'react';
 import { FieldEditor } from './field-editor';
 import type { IProvider } from '@/models/budget';
 
-interface ProviderItemProps {
+interface BudgetItemDetailsProps {
   provider: IProvider;
   onUpdate: (updated: IProvider) => void;
   onDelete: () => void;
 }
 
-export function ProviderItem({ provider, onUpdate, onDelete }: ProviderItemProps) {
+export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDetailsProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(provider.name);
-  const [isEditingAmount, setIsEditingAmount] = useState(false);
-  const [editedAmount, setEditedAmount] = useState((provider.amountCents / 100).toString());
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [editedNotes, setEditedNotes] = useState(provider.notes);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -26,16 +24,19 @@ export function ProviderItem({ provider, onUpdate, onDelete }: ProviderItemProps
     }).format(cents / 100);
   };
 
+  const calculateProviderTotal = (): number => {
+    return provider.fields
+      .filter(f => f.itemType === 'expense' && f.fieldType === 'currency')
+      .reduce((sum, field) => {
+        const value = parseFloat(field.value) || 0;
+        return sum + Math.round(value * 100);
+      }, 0);
+  };
+
   const handleNameSave = () => {
     if (!editedName.trim()) return;
     onUpdate({ ...provider, name: editedName.trim() });
     setIsEditingName(false);
-  };
-
-  const handleAmountSave = () => {
-    const cents = Math.round(parseFloat(editedAmount || '0') * 100);
-    onUpdate({ ...provider, amountCents: cents });
-    setIsEditingAmount(false);
   };
 
   const handleNotesSave = () => {
@@ -81,34 +82,9 @@ export function ProviderItem({ provider, onUpdate, onDelete }: ProviderItemProps
             </h4>
           )}
 
-          {isEditingAmount ? (
-            <div className="flex gap-2 mt-1">
-              <input
-                type="number"
-                value={editedAmount}
-                onChange={(e) => setEditedAmount(e.target.value)}
-                className="w-32 px-2 py-1 border border-gray-300 rounded text-sm"
-                step="0.01"
-                onBlur={handleAmountSave}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAmountSave();
-                  if (e.key === 'Escape') {
-                    setEditedAmount((provider.amountCents / 100).toString());
-                    setIsEditingAmount(false);
-                  }
-                }}
-                autoFocus
-              />
-            </div>
-          ) : (
-            <p
-              className="text-sm font-semibold text-primary cursor-pointer hover:opacity-80 mt-1"
-              onClick={() => setIsEditingAmount(true)}
-              title="Clique para editar valor"
-            >
-              {formatCurrency(provider.amountCents)}
-            </p>
-          )}
+          <p className="text-sm font-semibold text-primary mt-1">
+            {formatCurrency(calculateProviderTotal())}
+          </p>
         </div>
 
         <div className="flex gap-2 shrink-0">

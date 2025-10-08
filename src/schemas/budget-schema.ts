@@ -31,7 +31,6 @@ export const categorySchema = z.object({
 
 export const createBudgetSchema = z.object({
   projectId: objectIdSchema,
-  venueName: z.string().trim().min(1, 'Venue name required').max(200),
   items: z.array(budgetItemSchema).default([]),
   categories: z.array(categorySchema).default([]),
 });

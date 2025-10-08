@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Types } from 'mongoose';
 import { FIELD_TYPES, FIELD_TYPE_LABELS, type FieldType } from '@/lib/constants';
 import type { ICategoryField } from '@/models/budget';
@@ -18,6 +18,40 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
   const [newFieldKey, setNewFieldKey] = useState('');
   const [newFieldValue, setNewFieldValue] = useState('');
   const [newFieldType, setNewFieldType] = useState<FieldType>(FIELD_TYPES.TEXT);
+  const [isExpense, setIsExpense] = useState(false);
+  const checkboxId = useId();
+
+  const handleExpenseChange = (checked: boolean) => {
+    setIsExpense(checked);
+    if (checked) {
+      setNewFieldType(FIELD_TYPES.CURRENCY);
+    }
+  };
+
+  const getInputType = (): string => {
+    switch (newFieldType) {
+      case FIELD_TYPES.DATE:
+        return 'date';
+      case FIELD_TYPES.NUMBER:
+      case FIELD_TYPES.CURRENCY:
+        return 'number';
+      default:
+        return 'text';
+    }
+  };
+
+  const getInputProps = () => {
+    if (newFieldType === FIELD_TYPES.CURRENCY) {
+      return { step: '0.01', placeholder: 'R$ 0,00' };
+    }
+    if (newFieldType === FIELD_TYPES.NUMBER) {
+      return { step: '1', placeholder: '0' };
+    }
+    if (newFieldType === FIELD_TYPES.DATE) {
+      return { placeholder: 'dd/mm/aaaa' };
+    }
+    return { placeholder: 'Valor' };
+  };
 
   const handleAddField = () => {
     const trimmedKey = newFieldKey.trim();
@@ -30,12 +64,14 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
       key: trimmedKey,
       value: newFieldValue.trim(),
       fieldType: newFieldType,
+      itemType: isExpense ? 'expense' : 'information',
     };
 
     onChange([...fields, field]);
     setNewFieldKey('');
     setNewFieldValue('');
     setNewFieldType(FIELD_TYPES.TEXT);
+    setIsExpense(false);
   };
 
   const handleUpdateField = (index: number, updates: Partial<ICategoryField>) => {
@@ -98,6 +134,16 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
                 <span className="ml-2 text-xs text-gray-500">
                   ({FIELD_TYPE_LABELS[field.fieldType]})
                 </span>
+                {field.itemType === 'expense' && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                    Despesa
+                  </span>
+                )}
+                {field.itemType === 'information' && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    Info
+                  </span>
+                )}
               </div>
               <div className="flex gap-2 shrink-0">
                 <button
@@ -125,39 +171,62 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
 
       <div className="border-t pt-3">
         <p className="text-xs font-semibold text-gray-700 mb-2">Adicionar Campo</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            placeholder="Nome do campo"
-            value={newFieldKey}
-            onChange={(event) => setNewFieldKey(event.target.value)}
-            className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          <input
-            type="text"
-            placeholder="Valor"
-            value={newFieldValue}
-            onChange={(event) => setNewFieldValue(event.target.value)}
-            className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          <select
-            value={newFieldType}
-            onChange={handleTypeSelect}
-            className="px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            {fieldTypeEntries.map(([type, label]) => (
-              <option key={type} value={type}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={handleAddField}
-            className="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-primary-dark whitespace-nowrap"
-          >
-            + Campo
-          </button>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              placeholder="Nome do campo"
+              value={newFieldKey}
+              onChange={(event) => setNewFieldKey(event.target.value)}
+              className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <input
+              type={getInputType()}
+              {...getInputProps()}
+              value={newFieldValue}
+              onChange={(event) => setNewFieldValue(event.target.value)}
+              className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <select
+              value={newFieldType}
+              onChange={handleTypeSelect}
+              disabled={isExpense}
+              className="px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              {fieldTypeEntries.map(([type, label]) => (
+                <option key={type} value={type}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={handleAddField}
+              className="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-primary-dark whitespace-nowrap"
+            >
+              + Campo
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={checkboxId}
+              checked={isExpense}
+              onChange={(e) => handleExpenseChange(e.target.checked)}
+              className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
+            />
+            <label
+              htmlFor={checkboxId}
+              className="text-sm text-gray-700 cursor-pointer select-none"
+            >
+              É uma despesa?
+            </label>
+            {isExpense && (
+              <span className="text-xs text-gray-500 italic">
+                (Despesas são sempre em moeda R$)
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
