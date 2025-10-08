@@ -10,9 +10,8 @@ interface BudgetItemProps {
 }
 
 export function BudgetItem({ budget }: BudgetItemProps) {
-  const [category, setCategory] = useState<ICategory | null>(
-    budget.categories.length > 0 ? budget.categories[0] : null
-  );
+  const initialCategory: ICategory | null = budget.categories[0] ?? null;
+  const [category, setCategory] = useState<ICategory | null>(initialCategory);
 
   const updateBudget = useUpdateBudget();
   const deleteBudget = useDeleteBudget();
@@ -53,6 +52,7 @@ export function BudgetItem({ budget }: BudgetItemProps) {
             ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
             name: prov.name,
             notes: prov.notes,
+            amountCents: prov.amountCents ?? 0,
             fields: prov.fields.map((field) => ({
               ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
               key: field.key,

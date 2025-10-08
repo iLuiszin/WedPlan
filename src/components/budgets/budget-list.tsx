@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import { useBudgets } from '@/hooks/use-budgets';
 import { useProjectContext } from '@/components/projects/project-context';
 import { BudgetItem } from './budget-item';
-import { DEFAULT_BUDGET_CATEGORIES } from '@/lib/constants';
 import type { IBudget } from '@/models/budget';
 
 type SortOption = 'recent' | 'cheapest' | 'expensive' | 'category';
@@ -14,13 +13,6 @@ export function BudgetList() {
   const { data: budgets, isLoading, error } = useBudgets(projectId);
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(cents / 100);
-  };
 
   const getBudgetTotal = (budget: IBudget): number => {
     const itemsTotal = (budget.items ?? []).reduce((sum, item) => sum + item.amountCents, 0);
@@ -44,7 +36,8 @@ export function BudgetList() {
   };
 
   const getBudgetMainCategory = (budget: IBudget): string => {
-    return budget.categories.length > 0 ? budget.categories[0].name : 'Sem Categoria';
+    const firstCategory = budget.categories?.[0];
+    return firstCategory?.name ?? 'Sem Categoria';
   };
 
   const filteredAndSortedBudgets = useMemo(() => {
@@ -87,13 +80,6 @@ export function BudgetList() {
 
     return result;
   }, [budgets, sortBy, categoryFilter]);
-
-  const grandTotal = useMemo(() => {
-    if (!budgets) return 0;
-    return budgets.reduce((sum, budget) => {
-      return sum + getBudgetTotal(budget);
-    }, 0);
-  }, [budgets]);
 
   const availableCategories = useMemo(() => {
     if (!budgets) return [];

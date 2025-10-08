@@ -99,7 +99,7 @@ const budgetSchema = new Schema<IBudget>(
 budgetSchema.virtual('totalCents').get(function () {
   const itemsTotal = this.items.reduce((sum, item) => sum + item.amountCents, 0);
   const categoriesTotal = this.categories.reduce((sum, category) => {
-    return sum + category.providers.reduce((provSum, provider) => provSum + provider.amountCents, 0);
+    return sum + category.providers.reduce((provSum, provider) => provSum + (provider.amountCents ?? 0), 0);
   }, 0);
   return itemsTotal + categoriesTotal;
 });
