@@ -1,7 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useUpdateGuest, useDeleteGuest, useLinkPartners, useUnlinkPartner, useGuests } from '@/hooks/use-guests';
+import {
+  useUpdateGuest,
+  useDeleteGuest,
+  useLinkPartners,
+  useUnlinkPartner,
+  useGuests,
+} from '@/hooks/use-guests';
 import { useProjectContext } from '@/components/projects/project-context';
 import { CATEGORY_LABELS, ROLE_LABELS, GUEST_CATEGORIES } from '@/lib/constants';
 import type { IGuest } from '@/models/guest';
@@ -229,23 +235,23 @@ export function GuestItem({ guest }: GuestItemProps) {
           </select>
 
           {partner ? (
-            <div className="flex items-center gap-2 text-sm shrink-0">
-              <span className="text-gray-600 truncate max-w-40">
+            <div className="flex items-center text-sm min-w-36 relative h-6 bg-gray-100 rounded px-2 py-1">
+              <span className="text-gray-600 truncate max-w-28 absolute left-1/2 -translate-x-1/2">
                 💑 {partner.firstName} {partner.lastName}
               </span>
               <button
                 onClick={handleUnlinkPartner}
-                className="text-red-500 hover:text-red-700 text-xs shrink-0"
+                className="text-red-500 hover:text-red-700 text-xs absolute right-0"
                 title="Desvincular casal"
               >
                 ✕
               </button>
             </div>
           ) : isLinkingPartner ? (
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 min-w-36">
               <select
                 onChange={(e) => e.target.value && handleLinkPartner(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded text-sm max-w-40"
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm min-w-0"
                 defaultValue=""
               >
                 <option value="">Selecione...</option>
@@ -265,7 +271,7 @@ export function GuestItem({ guest }: GuestItemProps) {
           ) : (
             <button
               onClick={() => setIsLinkingPartner(true)}
-              className="px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded shrink-0"
+              className="min-w-36 px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded"
               title="Vincular como casal"
             >
               + Casal
