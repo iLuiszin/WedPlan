@@ -1,9 +1,50 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useProject } from '@/hooks/use-project';
 import { memo } from 'react';
+
+const brandConfig = {
+  href: '/',
+  label: 'WedPlan',
+  image: {
+    alt: 'Logotipo WedPlan com coracao e alianca',
+    height: 48,
+    src: '/logo.svg',
+    width: 48,
+  },
+};
+
+const brandTitleClass = 'text-xl md:text-2xl font-bold text-primary';
+const brandTitleLargeClass = 'text-2xl md:text-3xl font-bold text-primary';
+
+type BrandProps = {
+  titleClassName?: string;
+};
+
+function Brand({ titleClassName = brandTitleClass }: BrandProps) {
+  return (
+    <h1 className={titleClassName}>
+      <Link
+        href={brandConfig.href}
+        className="flex items-center justify-center hover:opacity-80 transition"
+        aria-label={brandConfig.label}
+      >
+        <Image
+          src={brandConfig.image.src}
+          alt={brandConfig.image.alt}
+          width={brandConfig.image.width}
+          height={brandConfig.image.height}
+          className="h-12 w-12 md:h-14 md:w-14"
+          priority
+        />
+        <span className="-ml-1 mt-1.5">{brandConfig.label}</span>
+      </Link>
+    </h1>
+  );
+}
 
 function HeaderComponent() {
   const pathname = usePathname();
@@ -19,9 +60,7 @@ function HeaderComponent() {
         {projectId ? (
           project ? (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
-              <Link href="/" className="hover:opacity-80 transition">
-                <h1 className="text-xl md:text-2xl font-bold text-primary">WedPlan</h1>
-              </Link>
+              <Brand />
               <div className="text-center sm:text-right">
                 <p className="text-base md:text-xl font-semibold text-gray-800">
                   {project.brideFirstName} & {project.groomFirstName}
@@ -34,14 +73,12 @@ function HeaderComponent() {
               </div>
             </div>
           ) : (
-            <Link href="/" className="hover:opacity-80 transition">
-              <h1 className="text-xl md:text-2xl font-bold text-primary">WedPlan</h1>
-            </Link>
+            <Brand />
           )
         ) : (
           <>
-            <h1 className="text-2xl md:text-3xl font-bold text-primary">WedPlan</h1>
-            <p className="text-sm text-gray-600 mt-1">Planeje seu dia perfeito</p>
+            <Brand titleClassName={brandTitleLargeClass} />
+            <p className="text-sm text-gray-600 mt-1 text-center">Planeje seu dia perfeito</p>
           </>
         )}
       </div>

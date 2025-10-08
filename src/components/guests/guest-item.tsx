@@ -241,7 +241,7 @@ export function GuestItem({ guest }: GuestItemProps) {
               </span>
               <button
                 onClick={handleUnlinkPartner}
-                className="text-red-500 hover:text-red-700 text-xs absolute right-0"
+                className="text-red-500 hover:text-red-700 text-xs absolute right-1.5"
                 title="Desvincular casal"
               >
                 ✕
