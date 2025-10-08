@@ -3,29 +3,21 @@
 import { GuestModel } from '@/models/guest';
 import { connectToDatabase } from '@/lib/db';
 import type { ActionResponse } from '@/types/action-response';
+import { buildGuestsWorkbook } from '@/lib/export-guests';
 
-export async function exportGuestsAsCSVAction(
-  projectId: string
+export async function exportGuestsAsXLSXAction(
+  projectId: string,
 ): Promise<ActionResponse<string>> {
   try {
     await connectToDatabase();
-    //@ts-expect-error - Mongoose typing complexity
+    // @ts-expect-error - Mongoose typing complexity when inferring model generics
     const guests = await GuestModel.find({ projectId }).sort({ lastName: 1, firstName: 1 });
 
-    let csv = '\uFEFF';
-    csv += 'Nome,Sobrenome,Categoria,Funcao,Parceiro\n';
+    const workbookData = await buildGuestsWorkbook(guests);
 
-    for (const guest of guests) {
-      const partner = guest.partnerId
-        //@ts-expect-error - Mongoose typing complexity
-        ? await GuestModel.findById(guest.partnerId).select('firstName lastName')
-        : null;
-      const partnerName = partner ? `${partner.firstName} ${partner.lastName}` : '';
+    const base64 = Buffer.from(workbookData).toString('base64');
 
-      csv += `"${guest.firstName}","${guest.lastName}","${guest.category}","${guest.role}","${partnerName}"\n`;
-    }
-
-    return { success: true, data: csv };
+    return { success: true, data: base64 };
   } catch (error) {
     console.error('Error exporting guests:', error);
     return { success: false, error: 'Failed to export guests', code: 'EXPORT_ERROR' };

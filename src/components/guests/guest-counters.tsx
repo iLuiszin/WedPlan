@@ -5,7 +5,7 @@ import { useGuests } from '@/hooks/use-guests';
 import { useProjectContext } from '@/components/projects/project-context';
 import { useModal } from '@/contexts/modal-context';
 import { GUEST_CATEGORIES, GUEST_ROLES } from '@/lib/constants';
-import { exportGuestsAsCSVAction } from '@/actions/export-actions';
+import { exportGuestsAsXLSXAction } from '@/actions/export-actions';
 
 export function GuestCounters() {
   const { projectId } = useProjectContext();
@@ -13,16 +13,25 @@ export function GuestCounters() {
   const [isExporting, setIsExporting] = useState(false);
   const { showAlert } = useModal();
 
-  const handleExportCSV = async () => {
+  const handleExportXLSX = async () => {
     setIsExporting(true);
     try {
-      const result = await exportGuestsAsCSVAction(projectId);
+      const result = await exportGuestsAsXLSXAction(projectId);
       if (result.success) {
-        const blob = new Blob([result.data], { type: 'text/csv;charset=utf-8;' });
+        const byteCharacters = atob(result.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let index = 0; index < byteCharacters.length; index += 1) {
+          byteNumbers[index] = byteCharacters.charCodeAt(index);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.href = url;
-        link.download = `convidados-${new Date().toISOString().split('T')[0]}.csv`;
+        link.download = `convidados-${new Date().toISOString().split('T')[0]}.xlsx`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -63,12 +72,12 @@ export function GuestCounters() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Estatísticas</h3>
         <button
-          onClick={handleExportCSV}
+          onClick={handleExportXLSX}
           disabled={isExporting}
           className="px-3 py-1.5 text-sm border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition disabled:opacity-50"
           title="Exportar lista de convidados"
         >
-          {isExporting ? 'Exportando...' : '📊 Exportar Excel'}
+          {isExporting ? 'Exportando...' : '📤 Exportar Planilha'}
         </button>
       </div>
 
