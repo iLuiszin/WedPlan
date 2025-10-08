@@ -98,94 +98,219 @@ export function GuestItem({ guest }: GuestItemProps) {
   );
 
   return (
-    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-      <div className="flex-1 flex items-center gap-4">
-        {/* Name (editable on click) */}
-        {isEditingName ? (
-          <div className="flex gap-2 flex-1">
-            <input
-              type="text"
-              value={editedFirstName}
-              onChange={(e) => setEditedFirstName(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded flex-1"
-              placeholder="Nome"
-              autoFocus
-            />
-            <input
-              type="text"
-              value={editedLastName}
-              onChange={(e) => setEditedLastName(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded flex-1"
-              placeholder="Sobrenome"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleNameSave();
-                if (e.key === 'Escape') handleNameCancel();
-              }}
-            />
-            <button
-              onClick={handleNameSave}
-              className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-            >
-              ✓
-            </button>
-            <button
-              onClick={handleNameCancel}
-              className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
-            >
-              ✕
-            </button>
-          </div>
-        ) : (
-          <span
-            className="font-semibold text-gray-800 cursor-pointer hover:text-primary flex-1"
-            onClick={() => setIsEditingName(true)}
-            title="Clique para editar"
-          >
-            {guest.firstName} {guest.lastName}
-          </span>
-        )}
+    <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      {/* Mobile: 2-row layout | Desktop: Single row */}
 
-        {/* Category Badge (click to cycle) */}
+      {/* Mobile Top Row: Name (left) + Category (right) - Hidden on desktop */}
+      <div className="flex md:hidden items-start justify-between gap-2 mb-3">
+        <div className="flex-1 min-w-0">
+          {isEditingName ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editedFirstName}
+                onChange={(e) => setEditedFirstName(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded flex-1 min-w-0 text-sm"
+                placeholder="Nome"
+                autoFocus
+              />
+              <input
+                type="text"
+                value={editedLastName}
+                onChange={(e) => setEditedLastName(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded flex-1 min-w-0 text-sm"
+                placeholder="Sobrenome"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleNameSave();
+                  if (e.key === 'Escape') handleNameCancel();
+                }}
+              />
+              <button
+                onClick={handleNameSave}
+                className="px-2 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 shrink-0"
+              >
+                ✓
+              </button>
+              <button
+                onClick={handleNameCancel}
+                className="px-2 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <span
+              className="font-semibold text-gray-800 cursor-pointer hover:text-primary block truncate"
+              onClick={() => setIsEditingName(true)}
+              title="Clique para editar"
+            >
+              {guest.firstName} {guest.lastName}
+            </span>
+          )}
+        </div>
         <button
           onClick={cycleCategory}
-          className={`px-3 py-1 rounded-full text-white text-sm font-medium transition ${getCategoryColor(
+          className={`px-3 py-1 rounded-full text-white text-sm font-medium transition shrink-0 ${getCategoryColor(
             guest.category
           )}`}
           title="Clique para alternar categoria"
         >
           {CATEGORY_LABELS[guest.category]}
         </button>
+      </div>
 
-        {/* Role Select */}
+      {/* Desktop: Single row layout - Hidden on mobile */}
+      <div className="hidden md:flex md:items-center md:justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          {isEditingName ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editedFirstName}
+                onChange={(e) => setEditedFirstName(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded flex-1 min-w-0"
+                placeholder="Nome"
+                autoFocus
+              />
+              <input
+                type="text"
+                value={editedLastName}
+                onChange={(e) => setEditedLastName(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded flex-1 min-w-0"
+                placeholder="Sobrenome"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleNameSave();
+                  if (e.key === 'Escape') handleNameCancel();
+                }}
+              />
+              <button
+                onClick={handleNameSave}
+                className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 shrink-0"
+              >
+                ✓
+              </button>
+              <button
+                onClick={handleNameCancel}
+                className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <span
+              className="font-semibold text-gray-800 cursor-pointer hover:text-primary block truncate"
+              onClick={() => setIsEditingName(true)}
+              title="Clique para editar"
+            >
+              {guest.firstName} {guest.lastName}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button
+            onClick={cycleCategory}
+            className={`px-3 py-1 rounded-full text-white text-sm font-medium transition shrink-0 ${getCategoryColor(
+              guest.category
+            )}`}
+            title="Clique para alternar categoria"
+          >
+            {CATEGORY_LABELS[guest.category]}
+          </button>
+
+          <select
+            value={guest.role}
+            onChange={(e) => handleRoleChange(e.target.value as GuestRole)}
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary shrink-0"
+          >
+            <option value="guest">{ROLE_LABELS.guest}</option>
+            <option value="groomsman">{ROLE_LABELS.groomsman}</option>
+            <option value="bridesmaid">{ROLE_LABELS.bridesmaid}</option>
+          </select>
+
+          {partner ? (
+            <div className="flex items-center gap-2 text-sm shrink-0">
+              <span className="text-gray-600 truncate max-w-[150px]">
+                💑 {partner.firstName} {partner.lastName}
+              </span>
+              <button
+                onClick={handleUnlinkPartner}
+                className="text-red-500 hover:text-red-700 text-xs shrink-0"
+                title="Desvincular casal"
+              >
+                ✕
+              </button>
+            </div>
+          ) : isLinkingPartner ? (
+            <div className="flex items-center gap-2">
+              <select
+                onChange={(e) => e.target.value && handleLinkPartner(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded text-sm"
+                defaultValue=""
+              >
+                <option value="">Selecione...</option>
+                {availablePartners?.map((g) => (
+                  <option key={g._id.toString()} value={g._id.toString()}>
+                    {g.firstName} {g.lastName}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => setIsLinkingPartner(false)}
+                className="text-gray-500 hover:text-gray-700 text-xs shrink-0"
+              >
+                Cancelar
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsLinkingPartner(true)}
+              className="px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded shrink-0"
+              title="Vincular como casal"
+            >
+              + Casal
+            </button>
+          )}
+
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition shrink-0"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Row: 3 Buttons - Hidden on desktop */}
+      <div className="flex md:hidden flex-wrap gap-2">
         <select
           value={guest.role}
           onChange={(e) => handleRoleChange(e.target.value as GuestRole)}
-          className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary min-w-0"
         >
           <option value="guest">{ROLE_LABELS.guest}</option>
           <option value="groomsman">{ROLE_LABELS.groomsman}</option>
           <option value="bridesmaid">{ROLE_LABELS.bridesmaid}</option>
         </select>
 
-        {/* Partner Link */}
         {partner ? (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-600">
+          <div className="flex items-center gap-1 flex-1 px-2 py-1 bg-gray-100 rounded text-sm min-w-0">
+            <span className="text-gray-600 truncate">
               💑 {partner.firstName} {partner.lastName}
             </span>
             <button
               onClick={handleUnlinkPartner}
-              className="text-red-500 hover:text-red-700 text-xs"
+              className="text-red-500 hover:text-red-700 text-xs shrink-0 ml-auto"
               title="Desvincular casal"
             >
               ✕
             </button>
           </div>
         ) : isLinkingPartner ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 flex-1 min-w-0">
             <select
               onChange={(e) => e.target.value && handleLinkPartner(e.target.value)}
-              className="px-2 py-1 border border-gray-300 rounded text-sm"
+              className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm min-w-0"
               defaultValue=""
             >
               <option value="">Selecione...</option>
@@ -197,29 +322,28 @@ export function GuestItem({ guest }: GuestItemProps) {
             </select>
             <button
               onClick={() => setIsLinkingPartner(false)}
-              className="text-gray-500 hover:text-gray-700 text-xs"
+              className="text-gray-500 hover:text-gray-700 text-xs shrink-0 px-2"
             >
-              Cancelar
+              ✕
             </button>
           </div>
         ) : (
           <button
             onClick={() => setIsLinkingPartner(true)}
-            className="px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded"
+            className="flex-1 px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded min-w-0"
             title="Vincular como casal"
           >
             + Casal
           </button>
         )}
-      </div>
 
-      {/* Delete Button */}
-      <button
-        onClick={handleDelete}
-        className="ml-4 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition"
-      >
-        Remover
-      </button>
+        <button
+          onClick={handleDelete}
+          className="flex-1 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition min-w-0"
+        >
+          Remover
+        </button>
+      </div>
     </div>
   );
 }

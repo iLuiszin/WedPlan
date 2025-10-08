@@ -143,22 +143,24 @@ export function BudgetItem({ budget }: BudgetItemProps) {
 
       <div className="space-y-2 mb-4">
         {items.map((item) => (
-          <div key={item._id.toString()} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-            <span className="flex-1">{item.title}</span>
-            <span className="font-semibold mr-4">{formatCurrency(item.amountCents)}</span>
-            <button
-              onClick={() => handleDeleteItem(item._id.toString())}
-              className="text-red-600 hover:text-red-800 text-xs"
-            >
-              Remover
-            </button>
+          <div key={item._id.toString()} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 bg-gray-50 rounded gap-2">
+            <span className="flex-1 truncate">{item.title}</span>
+            <div className="flex items-center justify-between sm:justify-end gap-4">
+              <span className="font-semibold">{formatCurrency(item.amountCents)}</span>
+              <button
+                onClick={() => handleDeleteItem(item._id.toString())}
+                className="text-red-600 hover:text-red-800 text-xs shrink-0"
+              >
+                Remover
+              </button>
+            </div>
           </div>
         ))}
       </div>
 
       <div className="border-t pt-4">
         <h4 className="text-sm font-semibold mb-2">Adicionar Item</h4>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             placeholder="Descrição"
@@ -171,12 +173,12 @@ export function BudgetItem({ budget }: BudgetItemProps) {
             placeholder="Valor (R$)"
             value={newItemAmount}
             onChange={(e) => setNewItemAmount(e.target.value)}
-            className="w-32 px-3 py-2 border border-gray-300 rounded-lg"
+            className="w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-lg"
             step="0.01"
           />
           <button
             onClick={handleAddItem}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark whitespace-nowrap"
           >
             Adicionar
           </button>

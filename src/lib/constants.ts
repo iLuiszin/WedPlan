@@ -12,6 +12,19 @@ export const GUEST_ROLES = {
   BRIDESMAID: 'bridesmaid',
 } as const;
 
+// Guest filter options
+export const GUEST_FILTERS = {
+  ALL: 'all',
+  GROOM: 'groom',
+  BRIDE: 'bride',
+  BOTH: 'both',
+  GROOMSMEN: 'groomsmen',
+  BRIDESMAIDS: 'bridesmaids',
+  COUPLES: 'couples',
+} as const;
+
+export type GuestFilter = typeof GUEST_FILTERS[keyof typeof GUEST_FILTERS];
+
 // Category labels (Portuguese)
 export const CATEGORY_LABELS = {
   [GUEST_CATEGORIES.GROOM]: 'Noivo',
@@ -24,4 +37,15 @@ export const ROLE_LABELS = {
   [GUEST_ROLES.GUEST]: 'Convidado',
   [GUEST_ROLES.GROOMSMAN]: 'Padrinho',
   [GUEST_ROLES.BRIDESMAID]: 'Madrinha',
+} as const;
+
+// Filter labels (Portuguese)
+export const FILTER_LABELS = {
+  [GUEST_FILTERS.ALL]: 'Todos',
+  [GUEST_FILTERS.GROOM]: 'Noivo',
+  [GUEST_FILTERS.BRIDE]: 'Noiva',
+  [GUEST_FILTERS.BOTH]: 'Ambos',
+  [GUEST_FILTERS.GROOMSMEN]: 'Padrinhos',
+  [GUEST_FILTERS.BRIDESMAIDS]: 'Madrinhas',
+  [GUEST_FILTERS.COUPLES]: 'Casais',
 } as const;
