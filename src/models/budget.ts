@@ -20,6 +20,8 @@ export interface IProvider {
   fields: ICategoryField[];
   notes: string;
   amountCents?: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ICategory {
@@ -72,7 +74,7 @@ const providerSchema = new Schema<IProvider>(
     notes: { type: String, trim: true, maxlength: 1000, default: '' },
     amountCents: { type: Number, min: 0, default: 0 },
   },
-  { _id: true }
+  { _id: true, timestamps: true }
 );
 
 const categorySchema = new Schema<ICategory>(

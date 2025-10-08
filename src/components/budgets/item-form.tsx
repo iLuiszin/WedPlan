@@ -16,11 +16,14 @@ export function ItemForm({ onAdd }: ItemFormProps) {
 
     if (!itemName.trim()) return;
 
+    const now = new Date();
     const newItem: IProvider = {
       _id: new Types.ObjectId(new Date().getTime().toString(16).padStart(24, '0')),
       name: itemName.trim(),
       fields: [],
       notes: '',
+      createdAt: now,
+      updatedAt: now,
     };
 
     onAdd(newItem);
