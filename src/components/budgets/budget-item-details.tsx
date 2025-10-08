@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import { useModal } from '@/contexts/modal-context';
 import { FieldEditor } from './field-editor';
+import { formatCurrencyFromCents, getProviderTotalCents } from '@/lib/budget-utils';
+import { EditHoverIcon } from '@/components/ui/edit-hover-icon';
 import type { IProvider } from '@/models/budget';
+
+const withUpdatedTimestamp = (provider: IProvider): IProvider => {
+  return { ...provider, updatedAt: new Date() };
+};
 
 interface BudgetItemDetailsProps {
   provider: IProvider;
@@ -19,30 +25,14 @@ export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDe
   const [isExpanded, setIsExpanded] = useState(false);
   const { showConfirm } = useModal();
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(cents / 100);
-  };
-
-  const calculateProviderTotal = (): number => {
-    return provider.fields
-      .filter(f => f.itemType === 'expense' && f.fieldType === 'currency')
-      .reduce((sum, field) => {
-        const value = parseFloat(field.value) || 0;
-        return sum + Math.round(value * 100);
-      }, 0);
-  };
-
   const handleNameSave = () => {
     if (!editedName.trim()) return;
-    onUpdate({ ...provider, name: editedName.trim() });
+    onUpdate(withUpdatedTimestamp({ ...provider, name: editedName.trim() }));
     setIsEditingName(false);
   };
 
   const handleNotesSave = () => {
-    onUpdate({ ...provider, notes: editedNotes });
+    onUpdate(withUpdatedTimestamp({ ...provider, notes: editedNotes }));
     setIsEditingNotes(false);
   };
 
@@ -82,16 +72,17 @@ export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDe
             </div>
           ) : (
             <h4
-              className="font-semibold text-gray-800 cursor-pointer hover:text-primary"
+              className="font-semibold text-gray-800 cursor-pointer hover:text-primary group inline-flex items-center gap-1"
               onClick={() => setIsEditingName(true)}
               title="Clique para editar"
             >
-              {provider.name}
+              <span className="truncate">{provider.name}</span>
+              <EditHoverIcon />
             </h4>
           )}
 
           <p className="text-sm font-semibold text-primary mt-1">
-            {formatCurrency(calculateProviderTotal())}
+            {formatCurrencyFromCents(getProviderTotalCents(provider))}
           </p>
         </div>
 
@@ -117,7 +108,7 @@ export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDe
             <p className="text-xs font-semibold text-gray-700 mb-2">Campos Personalizados</p>
             <FieldEditor
               fields={provider.fields}
-              onChange={(fields) => onUpdate({ ...provider, fields })}
+              onChange={(fields) => onUpdate(withUpdatedTimestamp({ ...provider, fields }))}
             />
           </div>
 
@@ -136,11 +127,14 @@ export function BudgetItemDetails({ provider, onUpdate, onDelete }: BudgetItemDe
               </div>
             ) : (
               <div
-                className="px-3 py-2 bg-gray-50 rounded text-sm text-gray-700 cursor-pointer hover:bg-gray-100 min-h-[60px]"
+                className="px-3 py-2 bg-gray-50 rounded text-sm text-gray-700 cursor-pointer hover:bg-gray-100 min-h-[60px] relative group"
                 onClick={() => setIsEditingNotes(true)}
-                title="Clique para editar observações"
+                title="Clique para editar observacoes"
               >
-                {provider.notes || 'Clique para adicionar observações...'}
+                <span className="block pr-6 whitespace-pre-wrap">
+                  {provider.notes || 'Clique para adicionar observações...'}
+                </span>
+                <EditHoverIcon className="absolute top-2 right-2 text-gray-400" />
               </div>
             )}
           </div>

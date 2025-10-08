@@ -11,6 +11,7 @@ import {
 import { useProjectContext } from '@/components/projects/project-context';
 import { useModal } from '@/contexts/modal-context';
 import { CATEGORY_LABELS, ROLE_LABELS, GUEST_CATEGORIES } from '@/lib/constants';
+import { EditHoverIcon } from '@/components/ui/edit-hover-icon';
 import type { IGuest } from '@/models/guest';
 import type { GuestCategory, GuestRole } from '@/schemas/guest-schema';
 
@@ -160,11 +161,16 @@ export function GuestItem({ guest }: GuestItemProps) {
             </div>
           ) : (
             <span
-              className="font-semibold text-gray-800 cursor-pointer hover:text-primary block truncate"
+              className="font-semibold text-gray-800 cursor-pointer hover:text-primary block truncate group"
               onClick={() => setIsEditingName(true)}
               title="Clique para editar"
             >
-              {guest.firstName} {guest.lastName}
+              <span className="inline-flex items-center gap-1 max-w-full">
+                <span className="truncate">
+                  {guest.firstName} {guest.lastName}
+                </span>
+                <EditHoverIcon className="shrink-0" />
+              </span>
             </span>
           )}
         </div>
@@ -218,11 +224,16 @@ export function GuestItem({ guest }: GuestItemProps) {
             </div>
           ) : (
             <span
-              className="font-semibold text-gray-800 cursor-pointer hover:text-primary block truncate"
+              className="font-semibold text-gray-800 cursor-pointer hover:text-primary block truncate group"
               onClick={() => setIsEditingName(true)}
               title="Clique para editar"
             >
-              {guest.firstName} {guest.lastName}
+              <span className="inline-flex items-center gap-1 max-w-full">
+                <span className="truncate">
+                  {guest.firstName} {guest.lastName}
+                </span>
+                <EditHoverIcon className="shrink-0" />
+              </span>
             </span>
           )}
         </div>

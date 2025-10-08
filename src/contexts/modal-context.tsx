@@ -25,6 +25,7 @@ interface PromptOptions {
   placeholder?: string;
   confirmText?: string;
   cancelText?: string;
+  inputType?: 'text' | 'currency';
 }
 
 interface ModalContextValue {
@@ -146,6 +147,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         placeholder={promptState.options.placeholder}
         confirmText={promptState.options.confirmText}
         cancelText={promptState.options.cancelText}
+        inputType={promptState.options.inputType}
       />
     </ModalContext.Provider>
   );

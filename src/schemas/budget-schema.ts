@@ -13,6 +13,7 @@ export const categoryFieldSchema = z.object({
   key: z.string().trim().min(1, 'Field name required').max(100),
   value: z.string().trim().max(500),
   fieldType: z.enum(['text', 'number', 'currency', 'date']).default('text'),
+  itemType: z.enum(['information', 'expense']).default('information'),
 });
 
 export const providerSchema = z.object({
@@ -21,6 +22,8 @@ export const providerSchema = z.object({
   fields: z.array(categoryFieldSchema).default([]),
   notes: z.string().trim().max(1000).default(''),
   amountCents: z.number().int().min(0, 'Amount must be positive').default(0),
+  createdAt: z.coerce.date().default(() => new Date()),
+  updatedAt: z.coerce.date().default(() => new Date()),
 });
 
 export const categorySchema = z.object({

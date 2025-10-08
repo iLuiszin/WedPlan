@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import { Types } from 'mongoose';
 import { useModal } from '@/contexts/modal-context';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { FIELD_TYPES, FIELD_TYPE_LABELS, type FieldType } from '@/lib/constants';
 import type { ICategoryField } from '@/models/budget';
 
@@ -160,6 +161,7 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
                         title: 'Editar Campo',
                         message: `Editar "${field.key}"`,
                         defaultValue: field.value,
+                        inputType: field.fieldType === FIELD_TYPES.CURRENCY ? 'currency' : 'text',
                       });
                       if (response !== null) {
                         handleUpdateField(index, { value: response });
@@ -193,13 +195,22 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
               onChange={(event) => setNewFieldKey(event.target.value)}
               className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <input
-              type={getInputType()}
-              {...getInputProps()}
-              value={newFieldValue}
-              onChange={(event) => setNewFieldValue(event.target.value)}
-              className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            {newFieldType === FIELD_TYPES.CURRENCY ? (
+              <CurrencyInput
+                placeholder="R$ 0,00"
+                value={newFieldValue}
+                onChange={(value) => setNewFieldValue(value)}
+                className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            ) : (
+              <input
+                type={getInputType()}
+                {...getInputProps()}
+                value={newFieldValue}
+                onChange={(event) => setNewFieldValue(event.target.value)}
+                className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            )}
             <select
               value={newFieldType}
               onChange={handleTypeSelect}

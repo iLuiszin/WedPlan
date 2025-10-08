@@ -6,6 +6,19 @@ import { useModal } from '@/contexts/modal-context';
 import { BudgetCategory } from './budget-category';
 import type { IBudget, ICategory } from '@/models/budget';
 
+const toIsoStringOrNull = (value: Date | string | undefined): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+};
+
 interface BudgetItemProps {
   budget: IBudget;
 }
@@ -50,19 +63,26 @@ export function BudgetItem({ budget }: BudgetItemProps) {
         {
           ...(isValidObjectId(updated._id.toString()) ? { _id: updated._id.toString() } : {}),
           name: updated.name,
-          providers: updated.providers.map((prov) => ({
-            ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
-            name: prov.name,
-            notes: prov.notes,
-            amountCents: prov.amountCents ?? 0,
-            fields: prov.fields.map((field) => ({
-              ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
-              key: field.key,
-              value: field.value,
-              fieldType: field.fieldType,
-              itemType: field.itemType,
-            })),
-          })),
+          providers: updated.providers.map((prov) => {
+            const createdAt = toIsoStringOrNull(prov.createdAt) ?? new Date().toISOString();
+            const updatedAt = toIsoStringOrNull(prov.updatedAt) ?? createdAt;
+
+            return {
+              ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
+              name: prov.name,
+              notes: prov.notes,
+              amountCents: prov.amountCents ?? 0,
+              createdAt,
+              updatedAt,
+              fields: prov.fields.map((field) => ({
+                ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
+                key: field.key,
+                value: field.value,
+                fieldType: field.fieldType,
+                itemType: field.itemType,
+              })),
+            };
+          }),
         },
       ],
     });

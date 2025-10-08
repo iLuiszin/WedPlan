@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useUpdateProject } from '@/hooks/use-project';
 import { useModal } from '@/contexts/modal-context';
 import type { IProject } from '@/models/project';
+import { EditHoverIcon } from '@/components/ui/edit-hover-icon';
 
 interface ProjectDetailsCardProps {
   project: IProject;
@@ -125,23 +126,11 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
         ) : (
           <p
             onClick={() => setIsEditingDate(true)}
-            className="text-lg text-gray-600 cursor-pointer hover:text-primary transition inline-flex items-center gap-1"
+            className="text-lg text-gray-600 cursor-pointer hover:text-primary transition group inline-flex items-center gap-1"
             title="Clique para editar a data"
           >
             {formattedDate}
-            <svg
-              className="w-4 h-4 opacity-0 hover:opacity-100 transition"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
+            <EditHoverIcon />
           </p>
         )}
       </div>
@@ -189,19 +178,7 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
               title="Clique para editar"
             >
               {project.brideFirstName} {project.brideLastName}
-              <svg
-                className="w-4 h-4 opacity-0 group-hover:opacity-100 transition"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
+              <EditHoverIcon />
             </p>
           )}
         </div>
@@ -248,19 +225,7 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
               title="Clique para editar"
             >
               {project.groomFirstName} {project.groomLastName}
-              <svg
-                className="w-4 h-4 opacity-0 group-hover:opacity-100 transition"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
+              <EditHoverIcon />
             </p>
           )}
         </div>
