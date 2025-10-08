@@ -25,7 +25,15 @@ export function BudgetItem({ budget }: BudgetItemProps) {
   };
 
   const totalCents = category
-    ? category.providers.reduce((sum, provider) => sum + provider.amountCents, 0)
+    ? category.providers.reduce((sum, provider) => {
+        const providerExpenses = provider.fields
+          .filter(f => f.itemType === 'expense' && f.fieldType === 'currency')
+          .reduce((fieldSum, field) => {
+            const value = parseFloat(field.value) || 0;
+            return fieldSum + Math.round(value * 100);
+          }, 0);
+        return sum + providerExpenses;
+      }, 0)
     : 0;
 
   const mainCategory = category?.name || 'Orçamento';
@@ -44,13 +52,13 @@ export function BudgetItem({ budget }: BudgetItemProps) {
           providers: updated.providers.map((prov) => ({
             ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
             name: prov.name,
-            amountCents: prov.amountCents,
             notes: prov.notes,
             fields: prov.fields.map((field) => ({
               ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
               key: field.key,
               value: field.value,
               fieldType: field.fieldType,
+              itemType: field.itemType,
             })),
           })),
         },

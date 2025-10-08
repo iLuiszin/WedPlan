@@ -18,6 +18,7 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
   const [newFieldKey, setNewFieldKey] = useState('');
   const [newFieldValue, setNewFieldValue] = useState('');
   const [newFieldType, setNewFieldType] = useState<FieldType>(FIELD_TYPES.TEXT);
+  const [newItemType, setNewItemType] = useState<'information' | 'expense'>('information');
 
   const handleAddField = () => {
     const trimmedKey = newFieldKey.trim();
@@ -30,12 +31,14 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
       key: trimmedKey,
       value: newFieldValue.trim(),
       fieldType: newFieldType,
+      itemType: newItemType,
     };
 
     onChange([...fields, field]);
     setNewFieldKey('');
     setNewFieldValue('');
     setNewFieldType(FIELD_TYPES.TEXT);
+    setNewItemType('information');
   };
 
   const handleUpdateField = (index: number, updates: Partial<ICategoryField>) => {
@@ -98,6 +101,16 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
                 <span className="ml-2 text-xs text-gray-500">
                   ({FIELD_TYPE_LABELS[field.fieldType]})
                 </span>
+                {field.itemType === 'expense' && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                    Despesa
+                  </span>
+                )}
+                {field.itemType === 'information' && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    Info
+                  </span>
+                )}
               </div>
               <div className="flex gap-2 shrink-0">
                 <button
@@ -150,6 +163,14 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
                 {label}
               </option>
             ))}
+          </select>
+          <select
+            value={newItemType}
+            onChange={(e) => setNewItemType(e.target.value as 'information' | 'expense')}
+            className="px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="information">Informação</option>
+            <option value="expense">Despesa</option>
           </select>
           <button
             type="button"

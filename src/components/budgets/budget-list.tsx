@@ -1,18 +1,19 @@
-﻿'use client';
+'use client';
 
 import { useState, useMemo } from 'react';
 import { useBudgets } from '@/hooks/use-budgets';
 import { useProjectContext } from '@/components/projects/project-context';
 import { BudgetItem } from './budget-item';
+import { DEFAULT_BUDGET_CATEGORIES } from '@/lib/constants';
 import type { IBudget } from '@/models/budget';
 
-type SortOption = 'recent' | 'cheapest' | 'expensive' | 'name';
+type SortOption = 'recent' | 'cheapest' | 'expensive' | 'category';
 
 export function BudgetList() {
   const { projectId } = useProjectContext();
   const { data: budgets, isLoading, error } = useBudgets(projectId);
   const [sortBy, setSortBy] = useState<SortOption>('recent');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -28,7 +29,13 @@ export function BudgetList() {
       return (
         sectionSum +
         (category.providers ?? []).reduce((providerSum, provider) => {
-          return providerSum + provider.amountCents;
+          const providerExpenses = provider.fields
+            .filter(f => f.itemType === 'expense' && f.fieldType === 'currency')
+            .reduce((fieldSum, field) => {
+              const value = parseFloat(field.value) || 0;
+              return fieldSum + Math.round(value * 100);
+            }, 0);
+          return providerSum + providerExpenses;
         }, 0)
       );
     }, 0);
@@ -36,15 +43,20 @@ export function BudgetList() {
     return itemsTotal + categoriesTotal;
   };
 
+  const getBudgetMainCategory = (budget: IBudget): string => {
+    return budget.categories.length > 0 ? budget.categories[0].name : 'Sem Categoria';
+  };
+
   const filteredAndSortedBudgets = useMemo(() => {
     if (!budgets) return [];
 
     let result = [...budgets];
 
-    if (searchQuery.trim()) {
-      result = result.filter((budget) =>
-        budget.venueName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    if (categoryFilter !== 'all') {
+      result = result.filter((budget) => {
+        const mainCategory = getBudgetMainCategory(budget);
+        return mainCategory === categoryFilter;
+      });
     }
 
     result.sort((a, b) => {
@@ -59,8 +71,11 @@ export function BudgetList() {
           const totalB = getBudgetTotal(b);
           return totalB - totalA;
         }
-        case 'name':
-          return a.venueName.localeCompare(b.venueName, 'pt-BR');
+        case 'category': {
+          const catA = getBudgetMainCategory(a);
+          const catB = getBudgetMainCategory(b);
+          return catA.localeCompare(catB, 'pt-BR');
+        }
         case 'recent':
         default: {
           const dateA = new Date(a.createdAt).getTime();
@@ -71,13 +86,25 @@ export function BudgetList() {
     });
 
     return result;
-  }, [budgets, sortBy, searchQuery]);
+  }, [budgets, sortBy, categoryFilter]);
 
   const grandTotal = useMemo(() => {
     if (!budgets) return 0;
     return budgets.reduce((sum, budget) => {
       return sum + getBudgetTotal(budget);
     }, 0);
+  }, [budgets]);
+
+  const availableCategories = useMemo(() => {
+    if (!budgets) return [];
+    const categories = new Set<string>();
+    budgets.forEach((budget) => {
+      const mainCat = getBudgetMainCategory(budget);
+      if (mainCat !== 'Sem Categoria') {
+        categories.add(mainCat);
+      }
+    });
+    return Array.from(categories).sort((a, b) => a.localeCompare(b, 'pt-BR'));
   }, [budgets]);
 
   if (isLoading) {
@@ -102,22 +129,21 @@ export function BudgetList() {
 
   return (
     <div>
-      <div className="bg-primary text-white rounded-lg p-6 mb-6 shadow-lg">
-        <h3 className="text-lg font-semibold mb-2">Total Geral</h3>
-        <p className="text-3xl font-bold">{formatCurrency(grandTotal)}</p>
-        <p className="text-sm opacity-90 mt-1">{budgets.length} orçamento(s) registrado(s)</p>
-      </div>
-
       <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
         <div className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-[200px]">
-            <input
-              type="text"
-              placeholder="Buscar por local..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            >
+              <option value="all">Todas as Categorias</option>
+              {availableCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="min-w-[180px]">
             <select
@@ -128,7 +154,7 @@ export function BudgetList() {
               <option value="recent">Mais Recentes</option>
               <option value="cheapest">Mais Baratos</option>
               <option value="expensive">Mais Caros</option>
-              <option value="name">Nome (A-Z)</option>
+              <option value="category">Categoria (A-Z)</option>
             </select>
           </div>
         </div>
@@ -136,7 +162,7 @@ export function BudgetList() {
 
       {filteredAndSortedBudgets.length === 0 ? (
         <div className="bg-gray-50 p-8 rounded-lg text-center text-gray-600">
-          Nenhum orçamento encontrado para &quot;{searchQuery}&quot;
+          Nenhum orçamento encontrado para a categoria selecionada.
         </div>
       ) : (
         <div className="space-y-4">
