@@ -32,15 +32,18 @@ function Brand({ titleClassName = brandTitleClass }: BrandProps) {
         className="flex items-center justify-center hover:opacity-80 transition"
         aria-label={brandConfig.label}
       >
-        <Image
-          src={brandConfig.image.src}
-          alt={brandConfig.image.alt}
-          width={brandConfig.image.width}
-          height={brandConfig.image.height}
-          className="h-12 w-12 md:h-14 md:w-14 "
-          priority
-        />
-        <span className="-ml-1 mt-1.5">{brandConfig.label}</span>
+        <div className="inline-grid grid-cols-[48px_auto_48px] md:grid-cols-[56px_auto_56px] items-center translate-x-4">
+          <Image
+            src={brandConfig.image.src}
+            alt={brandConfig.image.alt}
+            width={brandConfig.image.width}
+            height={brandConfig.image.height}
+            className="h-12 w-12 md:h-14 md:w-14"
+            priority
+          />
+          <span className="-ml-1 mt-1.5">{brandConfig.label}</span>
+          <div className="w-12 md:w-14" />
+        </div>
       </Link>
     </h1>
   );

@@ -13,6 +13,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html {
+  overflow-y: auto;
+}
+
+@supports (scrollbar-width: thin) {
+  html {
+    scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
