@@ -6,17 +6,17 @@ import { useModal } from '@/contexts/modal-context';
 import { BudgetCategory } from './budget-category';
 import type { IBudget, ICategory } from '@/models/budget';
 
-const toIsoStringOrNull = (value: Date | string | undefined): string | undefined => {
+const toDateOrNull = (value: Date | string | undefined): Date | undefined => {
   if (!value) {
     return undefined;
   }
 
   if (value instanceof Date) {
-    return value.toISOString();
+    return Number.isNaN(value.getTime()) ? undefined : value;
   }
 
   const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
 };
 
 interface BudgetItemProps {
@@ -64,8 +64,8 @@ export function BudgetItem({ budget }: BudgetItemProps) {
           ...(isValidObjectId(updated._id.toString()) ? { _id: updated._id.toString() } : {}),
           name: updated.name,
           providers: updated.providers.map((prov) => {
-            const createdAt = toIsoStringOrNull(prov.createdAt) ?? new Date().toISOString();
-            const updatedAt = toIsoStringOrNull(prov.updatedAt) ?? createdAt;
+            const createdAt = toDateOrNull(prov.createdAt) ?? new Date();
+            const updatedAt = toDateOrNull(prov.updatedAt) ?? createdAt;
 
             return {
               ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
