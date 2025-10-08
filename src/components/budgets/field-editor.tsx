@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Types } from 'mongoose';
 import { FIELD_TYPES, FIELD_TYPE_LABELS, type FieldType } from '@/lib/constants';
 import type { ICategoryField } from '@/models/budget';
@@ -19,6 +19,7 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
   const [newFieldValue, setNewFieldValue] = useState('');
   const [newFieldType, setNewFieldType] = useState<FieldType>(FIELD_TYPES.TEXT);
   const [isExpense, setIsExpense] = useState(false);
+  const checkboxId = useId();
 
   const handleExpenseChange = (checked: boolean) => {
     setIsExpense(checked);
@@ -209,12 +210,15 @@ export function FieldEditor({ fields, onChange }: FieldEditorProps) {
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
-              id="expense-checkbox"
+              id={checkboxId}
               checked={isExpense}
               onChange={(e) => handleExpenseChange(e.target.checked)}
               className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
             />
-            <label htmlFor="expense-checkbox" className="text-sm text-gray-700 cursor-pointer select-none">
+            <label
+              htmlFor={checkboxId}
+              className="text-sm text-gray-700 cursor-pointer select-none"
+            >
               É uma despesa?
             </label>
             {isExpense && (
