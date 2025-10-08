@@ -229,8 +229,8 @@ export function GuestItem({ guest }: GuestItemProps) {
           </select>
 
           {partner ? (
-            <div className="flex items-center gap-2 text-sm shrink-0">
-              <span className="text-gray-600 truncate max-w-[150px]">
+            <div className="flex items-center gap-2 text-sm w-48">
+              <span className="text-gray-600 truncate flex-1 min-w-0">
                 💑 {partner.firstName} {partner.lastName}
               </span>
               <button
@@ -242,10 +242,10 @@ export function GuestItem({ guest }: GuestItemProps) {
               </button>
             </div>
           ) : isLinkingPartner ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-48">
               <select
                 onChange={(e) => e.target.value && handleLinkPartner(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded text-sm"
+                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm min-w-0"
                 defaultValue=""
               >
                 <option value="">Selecione...</option>
@@ -259,13 +259,13 @@ export function GuestItem({ guest }: GuestItemProps) {
                 onClick={() => setIsLinkingPartner(false)}
                 className="text-gray-500 hover:text-gray-700 text-xs shrink-0"
               >
-                Cancelar
+                ✕
               </button>
             </div>
           ) : (
             <button
               onClick={() => setIsLinkingPartner(true)}
-              className="px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded shrink-0"
+              className="w-48 px-2 py-1 text-xs text-primary hover:text-primary-dark border border-primary rounded"
               title="Vincular como casal"
             >
               + Casal
