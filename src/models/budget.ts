@@ -6,11 +6,33 @@ export interface IBudgetItem {
   amountCents: number;
 }
 
+export interface ICategoryField {
+  _id: Types.ObjectId;
+  key: string;
+  value: string;
+  fieldType: 'text' | 'number' | 'currency' | 'date';
+}
+
+export interface IProvider {
+  _id: Types.ObjectId;
+  name: string;
+  fields: ICategoryField[];
+  notes: string;
+  amountCents: number;
+}
+
+export interface ICategory {
+  _id: Types.ObjectId;
+  name: string;
+  providers: IProvider[];
+}
+
 export interface IBudget {
   _id: Types.ObjectId;
   projectId: Types.ObjectId;
   venueName: string;
   items: IBudgetItem[];
+  categories: ICategory[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,11 +45,44 @@ const budgetItemSchema = new Schema<IBudgetItem>(
   { _id: true }
 );
 
+const categoryFieldSchema = new Schema<ICategoryField>(
+  {
+    key: { type: String, required: true, trim: true, maxlength: 100 },
+    value: { type: String, required: true, trim: true, maxlength: 500 },
+    fieldType: {
+      type: String,
+      required: true,
+      enum: ['text', 'number', 'currency', 'date'],
+      default: 'text',
+    },
+  },
+  { _id: true }
+);
+
+const providerSchema = new Schema<IProvider>(
+  {
+    name: { type: String, required: true, trim: true, maxlength: 200 },
+    fields: { type: [categoryFieldSchema], default: [] },
+    notes: { type: String, trim: true, maxlength: 1000, default: '' },
+    amountCents: { type: Number, required: true, min: 0, default: 0 },
+  },
+  { _id: true }
+);
+
+const categorySchema = new Schema<ICategory>(
+  {
+    name: { type: String, required: true, trim: true, maxlength: 100 },
+    providers: { type: [providerSchema], default: [] },
+  },
+  { _id: true }
+);
+
 const budgetSchema = new Schema<IBudget>(
   {
     projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true, index: true },
     venueName: { type: String, required: true, trim: true, maxlength: 200 },
     items: { type: [budgetItemSchema], default: [] },
+    categories: { type: [categorySchema], default: [] },
   },
   {
     timestamps: true,
@@ -37,7 +92,11 @@ const budgetSchema = new Schema<IBudget>(
 );
 
 budgetSchema.virtual('totalCents').get(function () {
-  return this.items.reduce((sum, item) => sum + item.amountCents, 0);
+  const itemsTotal = this.items.reduce((sum, item) => sum + item.amountCents, 0);
+  const categoriesTotal = this.categories.reduce((sum, category) => {
+    return sum + category.providers.reduce((provSum, provider) => provSum + provider.amountCents, 0);
+  }, 0);
+  return itemsTotal + categoriesTotal;
 });
 
 budgetSchema.index({ projectId: 1, venueName: 1 });

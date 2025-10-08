@@ -49,3 +49,35 @@ export const FILTER_LABELS = {
   [GUEST_FILTERS.BRIDESMAIDS]: 'Madrinhas',
   [GUEST_FILTERS.COUPLES]: 'Casais',
 } as const;
+
+// Budget field types
+export const FIELD_TYPES = {
+  TEXT: 'text',
+  NUMBER: 'number',
+  CURRENCY: 'currency',
+  DATE: 'date',
+} as const;
+
+export type FieldType = typeof FIELD_TYPES[keyof typeof FIELD_TYPES];
+
+// Field type labels (Portuguese)
+export const FIELD_TYPE_LABELS = {
+  [FIELD_TYPES.TEXT]: 'Texto',
+  [FIELD_TYPES.NUMBER]: 'Número',
+  [FIELD_TYPES.CURRENCY]: 'Moeda',
+  [FIELD_TYPES.DATE]: 'Data',
+} as const;
+
+// Default category suggestions
+export const DEFAULT_BUDGET_CATEGORIES = [
+  'Buffet',
+  'Local',
+  'Vestimentas',
+  'Decoração',
+  'Fotografia',
+  'Música',
+  'Convites',
+  'Flores',
+  'Transporte',
+  'Outros',
+] as const;

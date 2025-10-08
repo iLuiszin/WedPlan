@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Types } from 'mongoose';
 import { useUpdateBudget, useDeleteBudget } from '@/hooks/use-budgets';
-import type { IBudget, IBudgetItem } from '@/models/budget';
+import { BudgetCategory } from './budget-category';
+import { CategoryForm } from './category-form';
+import type { IBudget, ICategory } from '@/models/budget';
 
 interface BudgetItemProps {
   budget: IBudget;
@@ -12,12 +13,21 @@ interface BudgetItemProps {
 export function BudgetItem({ budget }: BudgetItemProps) {
   const [isEditingVenue, setIsEditingVenue] = useState(false);
   const [venueName, setVenueName] = useState(budget.venueName);
-  const [items, setItems] = useState<IBudgetItem[]>(budget.items);
-  const [newItemTitle, setNewItemTitle] = useState('');
-  const [newItemAmount, setNewItemAmount] = useState('');
+  const [categories, setCategories] = useState<ICategory[]>(budget.categories);
 
   const updateBudget = useUpdateBudget();
   const deleteBudget = useDeleteBudget();
+
+  const formatCurrency = (cents: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(cents / 100);
+  };
+
+  const totalCents = categories.reduce((sum, category) => {
+    return sum + category.providers.reduce((provSum, provider) => provSum + provider.amountCents, 0);
+  }, 0);
 
   const handleUpdateVenue = async () => {
     if (!venueName.trim()) return;
@@ -28,161 +38,156 @@ export function BudgetItem({ budget }: BudgetItemProps) {
     setIsEditingVenue(false);
   };
 
-  const handleAddItem = async () => {
-    if (!newItemTitle.trim() || !newItemAmount) return;
-
-    const newItem: IBudgetItem = {
-      _id: new Types.ObjectId(new Date().getTime().toString(16).padStart(24, '0')),
-      title: newItemTitle,
-      amountCents: Math.round(parseFloat(newItemAmount) * 100),
-    };
-
-    const updatedItems = [...items, newItem];
-    setItems(updatedItems);
+  const handleAddCategory = async (category: ICategory) => {
+    const updatedCategories = [...categories, category];
+    setCategories(updatedCategories);
 
     const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
 
     await updateBudget.mutateAsync({
       _id: budget._id.toString(),
-      items: updatedItems.map((item) => {
-        const baseItem = {
-          title: item.title,
-          amountCents: item.amountCents,
-        };
-        const itemIdStr = item._id.toString();
-        if (isValidObjectId(itemIdStr)) {
-          return { ...baseItem, _id: itemIdStr };
-        }
-        return baseItem;
-      }),
+      categories: updatedCategories.map((cat) => ({
+        ...(isValidObjectId(cat._id.toString()) ? { _id: cat._id.toString() } : {}),
+        name: cat.name,
+        providers: cat.providers.map((prov) => ({
+          ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
+          name: prov.name,
+          amountCents: prov.amountCents,
+          notes: prov.notes,
+          fields: prov.fields.map((field) => ({
+            ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
+            key: field.key,
+            value: field.value,
+            fieldType: field.fieldType,
+          })),
+        })),
+      })),
     });
-
-    setNewItemTitle('');
-    setNewItemAmount('');
   };
 
-  const handleDeleteItem = async (itemId: string) => {
-    const itemToDelete = items.find((item) => item._id.toString() === itemId);
-    if (!itemToDelete) return;
-
-    if (!confirm(`Tem certeza que deseja remover "${itemToDelete.title}"?`)) {
-      return;
-    }
-
-    const updatedItems = items.filter((item) => item._id.toString() !== itemId);
-    setItems(updatedItems);
+  const handleUpdateCategory = async (index: number, updated: ICategory) => {
+    const updatedCategories = categories.map((cat, i) => (i === index ? updated : cat));
+    setCategories(updatedCategories);
 
     const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
 
     await updateBudget.mutateAsync({
       _id: budget._id.toString(),
-      items: updatedItems.map((item) => {
-        const baseItem = {
-          title: item.title,
-          amountCents: item.amountCents,
-        };
-        const itemIdStr = item._id.toString();
-        if (isValidObjectId(itemIdStr)) {
-          return { ...baseItem, _id: itemIdStr };
-        }
-        return baseItem;
-      }),
+      categories: updatedCategories.map((cat) => ({
+        ...(isValidObjectId(cat._id.toString()) ? { _id: cat._id.toString() } : {}),
+        name: cat.name,
+        providers: cat.providers.map((prov) => ({
+          ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
+          name: prov.name,
+          amountCents: prov.amountCents,
+          notes: prov.notes,
+          fields: prov.fields.map((field) => ({
+            ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
+            key: field.key,
+            value: field.value,
+            fieldType: field.fieldType,
+          })),
+        })),
+      })),
     });
   };
 
-  const handleDelete = async () => {
+  const handleDeleteCategory = async (index: number) => {
+    const updatedCategories = categories.filter((_, i) => i !== index);
+    setCategories(updatedCategories);
+
+    const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
+    await updateBudget.mutateAsync({
+      _id: budget._id.toString(),
+      categories: updatedCategories.map((cat) => ({
+        ...(isValidObjectId(cat._id.toString()) ? { _id: cat._id.toString() } : {}),
+        name: cat.name,
+        providers: cat.providers.map((prov) => ({
+          ...(isValidObjectId(prov._id.toString()) ? { _id: prov._id.toString() } : {}),
+          name: prov.name,
+          amountCents: prov.amountCents,
+          notes: prov.notes,
+          fields: prov.fields.map((field) => ({
+            ...(isValidObjectId(field._id.toString()) ? { _id: field._id.toString() } : {}),
+            key: field.key,
+            value: field.value,
+            fieldType: field.fieldType,
+          })),
+        })),
+      })),
+    });
+  };
+
+  const handleDeleteBudget = async () => {
     if (confirm('Tem certeza que deseja excluir este orçamento?')) {
       await deleteBudget.mutateAsync(budget._id.toString());
     }
   };
 
-  const totalCents = items.reduce((sum, item) => sum + item.amountCents, 0);
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(cents / 100);
-  };
-
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm mb-4">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-100">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
+        <div className="flex-1 min-w-0">
           {isEditingVenue ? (
             <div className="flex gap-2">
               <input
                 type="text"
                 value={venueName}
                 onChange={(e) => setVenueName(e.target.value)}
-                className="flex-1 px-3 py-1 border border-gray-300 rounded"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
                 onBlur={handleUpdateVenue}
                 onKeyDown={(e) => e.key === 'Enter' && handleUpdateVenue()}
                 autoFocus
               />
             </div>
           ) : (
-            <h3
-              className="text-xl font-semibold cursor-pointer hover:text-primary"
-              onClick={() => setIsEditingVenue(true)}
-              title="Clique para editar"
-            >
-              {venueName}
-            </h3>
+            <div>
+              <h3
+                className="text-2xl font-bold text-gray-800 cursor-pointer hover:text-primary transition"
+                onClick={() => setIsEditingVenue(true)}
+                title="Clique para editar"
+              >
+                {venueName}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Total Geral: <span className="font-bold text-primary text-lg">{formatCurrency(totalCents)}</span>
+                {categories.length > 0 && (
+                  <span className="ml-2">• {categories.length} categoria(s)</span>
+                )}
+              </p>
+            </div>
           )}
-          <p className="text-sm text-gray-500">
-            Total: <span className="font-semibold text-primary">{formatCurrency(totalCents)}</span>
-          </p>
         </div>
         <button
-          onClick={handleDelete}
-          className="text-red-600 hover:text-red-800 text-sm"
+          onClick={handleDeleteBudget}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm shrink-0"
         >
           Remover Orçamento
         </button>
       </div>
 
-      <div className="space-y-2 mb-4">
-        {items.map((item) => (
-          <div key={item._id.toString()} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 bg-gray-50 rounded gap-2">
-            <span className="flex-1 truncate">{item.title}</span>
-            <div className="flex items-center justify-between sm:justify-end gap-4">
-              <span className="font-semibold">{formatCurrency(item.amountCents)}</span>
-              <button
-                onClick={() => handleDeleteItem(item._id.toString())}
-                className="text-red-600 hover:text-red-800 text-xs shrink-0"
-              >
-                Remover
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="space-y-4">
+        <CategoryForm onAdd={handleAddCategory} />
 
-      <div className="border-t pt-4">
-        <h4 className="text-sm font-semibold mb-2">Adicionar Item</h4>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            placeholder="Descrição"
-            value={newItemTitle}
-            onChange={(e) => setNewItemTitle(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-          />
-          <input
-            type="number"
-            placeholder="Valor (R$)"
-            value={newItemAmount}
-            onChange={(e) => setNewItemAmount(e.target.value)}
-            className="w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-lg"
-            step="0.01"
-          />
-          <button
-            onClick={handleAddItem}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark whitespace-nowrap"
-          >
-            Adicionar
-          </button>
-        </div>
+        {categories.length > 0 && (
+          <div className="space-y-3">
+            {categories.map((category, index) => (
+              <BudgetCategory
+                key={category._id.toString()}
+                category={category}
+                onUpdate={(updated) => handleUpdateCategory(index, updated)}
+                onDelete={() => handleDeleteCategory(index)}
+              />
+            ))}
+          </div>
+        )}
+
+        {categories.length === 0 && (
+          <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
+            Nenhuma categoria adicionada. Comece criando uma categoria acima.
+          </div>
+        )}
       </div>
     </div>
   );
