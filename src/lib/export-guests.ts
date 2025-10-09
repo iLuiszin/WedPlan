@@ -1,4 +1,4 @@
-import ExcelJS from 'exceljs';
+import type ExcelJS from 'exceljs';
 import type { IGuest } from '@/models/guest';
 import { CATEGORY_LABELS, ROLE_LABELS } from './constants';
 
@@ -33,7 +33,10 @@ const createPartnerLookup = (guests: IGuest[]): Map<string, IGuest> => {
   }, new Map<string, IGuest>());
 };
 
-export async function buildGuestsWorkbook(guests: IGuest[]): Promise<ArrayBuffer> {
+export async function buildGuestsWorkbook(
+  guests: IGuest[],
+  ExcelJS: typeof import('exceljs').default
+): Promise<ArrayBuffer> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'WedPlan';
   workbook.created = new Date();
