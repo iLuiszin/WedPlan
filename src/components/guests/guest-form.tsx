@@ -4,12 +4,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createGuestSchema, type CreateGuestInput } from '@/schemas/guest-schema';
 import { useCreateGuest } from '@/hooks/use-guests';
-import { useProjectContext } from '@/components/projects/project-context';
 import { GUEST_CATEGORIES, GUEST_ROLES } from '@/lib/constants';
 import { useState } from 'react';
 
-export function GuestForm() {
-  const { projectId } = useProjectContext();
+interface GuestFormProps {
+  projectId: string;
+}
+
+export function GuestForm({ projectId }: GuestFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const createGuest = useCreateGuest();
 

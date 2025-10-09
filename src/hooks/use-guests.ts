@@ -14,7 +14,7 @@ import type { CreateGuestInput, UpdateGuestInput } from '@/schemas/guest-schema'
 
 const GUESTS_QUERY_KEY = ['guests'] as const;
 
-export function useGuests(projectId: string) {
+export function useGuests(projectId: string, options = {}) {
   return useQuery({
     queryKey: [...GUESTS_QUERY_KEY, projectId],
     queryFn: async () => {
@@ -24,6 +24,7 @@ export function useGuests(projectId: string) {
       }
       return result.data;
     },
+    ...options,
   });
 }
 

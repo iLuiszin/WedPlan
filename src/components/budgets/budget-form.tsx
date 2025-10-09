@@ -4,12 +4,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createBudgetSchema, type CreateBudgetInput } from '@/schemas/budget-schema';
 import { useCreateBudget } from '@/hooks/use-budgets';
-import { useProjectContext } from '@/components/projects/project-context';
 import { DEFAULT_BUDGET_CATEGORIES } from '@/lib/constants';
 import { useState } from 'react';
 
-export function BudgetForm() {
-  const { projectId } = useProjectContext();
+interface BudgetFormProps {
+  projectId: string;
+}
+
+export function BudgetForm({ projectId }: BudgetFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const createBudget = useCreateBudget();
