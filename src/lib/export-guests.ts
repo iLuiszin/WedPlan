@@ -1,4 +1,3 @@
-import ExcelJS from 'exceljs';
 import type { IGuest } from '@/models/guest';
 import { CATEGORY_LABELS, ROLE_LABELS } from './constants';
 
@@ -33,7 +32,11 @@ const createPartnerLookup = (guests: IGuest[]): Map<string, IGuest> => {
   }, new Map<string, IGuest>());
 };
 
-export async function buildGuestsWorkbook(guests: IGuest[]): Promise<ArrayBuffer> {
+export async function buildGuestsWorkbook(
+  guests: IGuest[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ExcelJS: any
+): Promise<ArrayBuffer> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'WedPlan';
   workbook.created = new Date();
@@ -74,7 +77,8 @@ export async function buildGuestsWorkbook(guests: IGuest[]): Promise<ArrayBuffer
     to: { row: 1, column: COLUMN_CONFIG.length },
   };
 
-  worksheet.eachRow((row, index) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  worksheet.eachRow((row: any, index: number) => {
     if (index === 1) {
       return;
     }
