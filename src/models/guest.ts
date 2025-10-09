@@ -1,4 +1,4 @@
-import { Schema, model, models, type Types } from 'mongoose';
+import { Schema, model, models, type Model, type Types } from 'mongoose';
 
 export interface IGuest {
   _id: Types.ObjectId;
@@ -46,4 +46,5 @@ guestSchema.index({ projectId: 1, lastName: 1, firstName: 1 });
 guestSchema.index({ projectId: 1, category: 1 });
 guestSchema.index({ projectId: 1, role: 1 });
 
-export const GuestModel = models.Guest || model<IGuest>('Guest', guestSchema);
+export const GuestModel: Model<IGuest> =
+  (models.Guest as Model<IGuest> | undefined) ?? model<IGuest>('Guest', guestSchema);

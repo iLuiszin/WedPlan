@@ -11,12 +11,11 @@ import {
   getGuestsAction,
 } from '@/actions/guest-actions';
 import type { CreateGuestInput, UpdateGuestInput } from '@/schemas/guest-schema';
-
-const GUESTS_QUERY_KEY = ['guests'] as const;
+import { queryKeys } from '@/lib/query-keys';
 
 export function useGuests(projectId: string, options = {}) {
   return useQuery({
-    queryKey: [...GUESTS_QUERY_KEY, projectId],
+    queryKey: queryKeys.guests.byProject(projectId),
     queryFn: async () => {
       const result = await getGuestsAction(projectId);
       if (!result.success) {
@@ -43,7 +42,7 @@ export function useCreateGuest() {
       return result.data;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: GUESTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.guests.all() });
       toast.success('Convidado adicionado com sucesso!');
     },
     onError: (error: Error) => {
@@ -64,7 +63,7 @@ export function useUpdateGuest() {
       return result.data;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: GUESTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.guests.all() });
       toast.success('Convidado atualizado com sucesso!');
     },
     onError: (error: Error) => {
@@ -84,7 +83,7 @@ export function useDeleteGuest() {
       }
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: GUESTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.guests.all() });
       toast.success('Convidado removido com sucesso!');
     },
     onError: (error: Error) => {
@@ -98,13 +97,13 @@ export function useLinkPartners() {
 
   return useMutation({
     mutationFn: async ({ aId, bId }: { aId: string; bId: string }) => {
-      const result = await linkPartnersAction(aId, bId);
+      const result = await linkPartnersAction({ aId, bId });
       if (!result.success) {
         throw new Error(result.error);
       }
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: GUESTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.guests.all() });
       toast.success('Parceiros vinculados com sucesso!');
     },
     onError: (error: Error) => {
@@ -124,7 +123,7 @@ export function useUnlinkPartner() {
       }
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: GUESTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.guests.all() });
       toast.success('Parceiro desvinculado com sucesso!');
     },
     onError: (error: Error) => {

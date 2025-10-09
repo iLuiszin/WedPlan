@@ -5,11 +5,11 @@ import { useGuests } from '@/hooks/use-guests';
 import { useModal } from '@/contexts/modal-context';
 import { GUEST_CATEGORIES, GUEST_ROLES } from '@/lib/constants';
 import { exportGuestsAsXLSXAction } from '@/actions/export-actions';
-import type { IGuest } from '@/models/guest';
+import type { SerializedGuest } from '@/lib/guest-utils';
 
 interface GuestCountersProps {
   projectId: string;
-  initialData?: IGuest[];
+  initialData?: SerializedGuest[];
 }
 
 export function GuestCounters({ projectId, initialData }: GuestCountersProps) {

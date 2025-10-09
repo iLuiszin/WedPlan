@@ -1,15 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { useGuests } from '@/hooks/use-guests';
+import { useGuestFiltering } from '@/hooks/use-guest-filtering';
 import { GuestItem } from './guest-item';
 import { CoupleCard } from './couple-card';
-import { useState, useMemo } from 'react';
-import { GUEST_FILTERS, GUEST_ROLES, FILTER_LABELS, type GuestFilter } from '@/lib/constants';
-import type { IGuest } from '@/models/guest';
+import { GUEST_FILTERS, FILTER_LABELS, type GuestFilter } from '@/lib/constants';
+import type { SerializedGuest } from '@/lib/guest-utils';
 
 interface GuestListClientProps {
   projectId: string;
-  initialData?: IGuest[];
+  initialData?: SerializedGuest[];
 }
 
 export function GuestListClient({ projectId, initialData }: GuestListClientProps) {
@@ -17,64 +18,7 @@ export function GuestListClient({ projectId, initialData }: GuestListClientProps
   const [filterType, setFilterType] = useState<GuestFilter>(GUEST_FILTERS.ALL);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredContent = useMemo(() => {
-    if (!guests) return { type: 'guests' as const, items: [] };
-
-    const query = searchQuery.toLowerCase();
-
-    if (filterType === GUEST_FILTERS.COUPLES) {
-      const seenPairs = new Set<string>();
-      const couples: Array<{ partnerA: typeof guests[0]; partnerB: typeof guests[0] }> = [];
-
-      guests.forEach((guest) => {
-        if (!guest.partnerId) return;
-
-        const partner = guests.find((g) => g._id.toString() === guest.partnerId?.toString());
-        if (!partner) return;
-
-        const pairKey = [guest._id.toString(), partner._id.toString()].sort().join('-');
-        if (seenPairs.has(pairKey)) return;
-
-        if (
-          query &&
-          !`${guest.firstName} ${guest.lastName}`.toLowerCase().includes(query) &&
-          !`${partner.firstName} ${partner.lastName}`.toLowerCase().includes(query)
-        ) {
-          return;
-        }
-
-        seenPairs.add(pairKey);
-        couples.push({ partnerA: guest, partnerB: partner });
-      });
-
-      return { type: 'couples' as const, items: couples };
-    }
-
-    const filtered = guests.filter((guest) => {
-      if (filterType === GUEST_FILTERS.GROOMSMEN && guest.role !== GUEST_ROLES.GROOMSMAN) {
-        return false;
-      }
-      if (filterType === GUEST_FILTERS.BRIDESMAIDS && guest.role !== GUEST_ROLES.BRIDESMAID) {
-        return false;
-      }
-      if (
-        filterType !== GUEST_FILTERS.ALL &&
-        filterType !== GUEST_FILTERS.GROOMSMEN &&
-        filterType !== GUEST_FILTERS.BRIDESMAIDS &&
-        guest.category !== filterType
-      ) {
-        return false;
-      }
-
-      if (query && !`${guest.firstName} ${guest.lastName}`.toLowerCase().includes(query)) {
-        return false;
-      }
-
-      return true;
-    });
-
-    return { type: 'guests' as const, items: filtered };
-  }, [guests, filterType, searchQuery]);
+  const filteredContent = useGuestFiltering(guests, filterType, searchQuery);
 
   if (isLoading) {
     return (

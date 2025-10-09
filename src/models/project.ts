@@ -1,4 +1,4 @@
-import { Schema, model, models, type Types } from 'mongoose';
+import { Schema, model, models, type Model, type Types } from 'mongoose';
 
 export interface IProject {
   _id: Types.ObjectId;
@@ -34,4 +34,5 @@ projectSchema.virtual('groomName').get(function () {
   return `${this.groomFirstName} ${this.groomLastName}`;
 });
 
-export const ProjectModel = models.Project || model<IProject>('Project', projectSchema);
+export const ProjectModel: Model<IProject> =
+  (models.Project as Model<IProject> | undefined) ?? model<IProject>('Project', projectSchema);

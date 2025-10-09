@@ -1,5 +1,11 @@
+import type * as ExcelJSNamespace from 'exceljs';
+import type { Row } from 'exceljs';
 import type { IGuest } from '@/models/guest';
+import type { SerializedDocument } from '@/types/mongoose-helpers';
 import { CATEGORY_LABELS, ROLE_LABELS } from './constants';
+
+type ExcelJSModule = typeof ExcelJSNamespace;
+type SerializedGuest = SerializedDocument<IGuest>;
 
 const COLUMN_CONFIG = [
   { header: 'Nome Completo', key: 'fullName', width: 32 },
@@ -19,23 +25,22 @@ const getRoleLabel = (role: IGuest['role']): string => {
   return ROLE_LABELS[role] ?? DEFAULT_ROLE_LABEL;
 };
 
-const buildFullName = (guest: IGuest): string => {
+const buildFullName = (guest: SerializedGuest): string => {
   const firstName = guest.firstName.trim();
   const lastName = guest.lastName?.trim();
   return lastName ? `${firstName} ${lastName}`.trim() : firstName;
 };
 
-const createPartnerLookup = (guests: IGuest[]): Map<string, IGuest> => {
+const createPartnerLookup = (guests: SerializedGuest[]): Map<string, SerializedGuest> => {
   return guests.reduce((map, guest) => {
-    map.set(guest._id.toString(), guest);
+    map.set(guest._id, guest);
     return map;
-  }, new Map<string, IGuest>());
+  }, new Map<string, SerializedGuest>());
 };
 
 export async function buildGuestsWorkbook(
-  guests: IGuest[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ExcelJS: any
+  guests: SerializedGuest[],
+  ExcelJS: ExcelJSModule
 ): Promise<ArrayBuffer> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'WedPlan';
@@ -55,7 +60,7 @@ export async function buildGuestsWorkbook(
   const partnerLookup = createPartnerLookup(guests);
 
   guests.forEach((guest) => {
-    const partnerId = guest.partnerId ? guest.partnerId.toString() : undefined;
+    const partnerId = guest.partnerId ? String(guest.partnerId) : null;
     const partnerGuest = partnerId ? partnerLookup.get(partnerId) : undefined;
     const partnerName = partnerGuest ? buildFullName(partnerGuest) : '';
 
@@ -77,9 +82,8 @@ export async function buildGuestsWorkbook(
     to: { row: 1, column: COLUMN_CONFIG.length },
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  worksheet.eachRow((row: any, index: number) => {
-    if (index === 1) {
+  worksheet.eachRow((row: Row, rowNumber: number) => {
+    if (rowNumber === 1) {
       return;
     }
     row.alignment = { vertical: 'middle' };
