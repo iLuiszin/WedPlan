@@ -9,12 +9,11 @@ import {
   getBudgetsAction,
 } from '@/actions/budget-actions';
 import type { CreateBudgetInput, UpdateBudgetInput } from '@/schemas/budget-schema';
-
-const BUDGETS_QUERY_KEY = ['budgets'] as const;
+import { queryKeys } from '@/lib/query-keys';
 
 export function useBudgets(projectId: string, options = {}) {
   return useQuery({
-    queryKey: [...BUDGETS_QUERY_KEY, projectId],
+    queryKey: queryKeys.budgets.byProject(projectId),
     queryFn: async () => {
       const result = await getBudgetsAction(projectId);
       if (!result.success) {
@@ -41,7 +40,7 @@ export function useCreateBudget() {
       return result.data;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: BUDGETS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.budgets.all() });
       toast.success('Orçamento criado com sucesso!');
     },
     onError: (error: Error) => {
@@ -62,7 +61,7 @@ export function useUpdateBudget() {
       return result.data;
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: BUDGETS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.budgets.all() });
       toast.success('Orçamento atualizado com sucesso!');
     },
     onError: (error: Error) => {
@@ -82,7 +81,7 @@ export function useDeleteBudget() {
       }
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: BUDGETS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.budgets.all() });
       toast.success('Orçamento removido com sucesso!');
     },
     onError: (error: Error) => {

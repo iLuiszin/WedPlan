@@ -3,12 +3,12 @@
 import { useUnlinkPartner } from '@/hooks/use-guests';
 import { useModal } from '@/contexts/modal-context';
 import { CATEGORY_LABELS, ROLE_LABELS, GUEST_CATEGORIES } from '@/lib/constants';
-import type { IGuest } from '@/models/guest';
 import type { GuestCategory } from '@/schemas/guest-schema';
+import type { SerializedGuest } from '@/lib/guest-utils';
 
 interface CoupleCardProps {
-  partnerA: IGuest;
-  partnerB: IGuest;
+  partnerA: SerializedGuest;
+  partnerB: SerializedGuest;
 }
 
 export function CoupleCard({ partnerA, partnerB }: CoupleCardProps) {

@@ -13,7 +13,6 @@ export async function exportGuestsAsXLSXAction(
 
     const ExcelJS = (await import('exceljs')).default;
 
-    // @ts-expect-error - Mongoose typing complexity when inferring model generics
     const guests = await GuestModel.find({ projectId }).sort({ lastName: 1, firstName: 1 });
 
     const workbookData = await buildGuestsWorkbook(guests, ExcelJS);

@@ -46,4 +46,5 @@ guestSchema.index({ projectId: 1, lastName: 1, firstName: 1 });
 guestSchema.index({ projectId: 1, category: 1 });
 guestSchema.index({ projectId: 1, role: 1 });
 
-export const GuestModel = models.Guest || model<IGuest>('Guest', guestSchema);
+const TempGuestModel = model<IGuest>('Guest', guestSchema);
+export const GuestModel = (models.Guest as typeof TempGuestModel) || TempGuestModel;
