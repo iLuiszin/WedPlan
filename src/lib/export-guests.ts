@@ -1,5 +1,9 @@
+import type * as ExcelJSNamespace from 'exceljs';
+import type { Row } from 'exceljs';
 import type { IGuest } from '@/models/guest';
 import { CATEGORY_LABELS, ROLE_LABELS } from './constants';
+
+type ExcelJSModule = typeof ExcelJSNamespace;
 
 const COLUMN_CONFIG = [
   { header: 'Nome Completo', key: 'fullName', width: 32 },
@@ -34,8 +38,7 @@ const createPartnerLookup = (guests: IGuest[]): Map<string, IGuest> => {
 
 export async function buildGuestsWorkbook(
   guests: IGuest[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ExcelJS: any
+  ExcelJS: ExcelJSModule
 ): Promise<ArrayBuffer> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'WedPlan';
@@ -77,9 +80,8 @@ export async function buildGuestsWorkbook(
     to: { row: 1, column: COLUMN_CONFIG.length },
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  worksheet.eachRow((row: any, index: number) => {
-    if (index === 1) {
+  worksheet.eachRow((row: Row, rowNumber: number) => {
+    if (rowNumber === 1) {
       return;
     }
     row.alignment = { vertical: 'middle' };

@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { useUpdateProject } from '@/hooks/use-project';
 import { useModal } from '@/contexts/modal-context';
 import type { IProject } from '@/models/project';
+import type { SerializedDocument } from '@/types/mongoose-helpers';
 import { EditHoverIcon } from '@/components/ui/edit-hover-icon';
 
 interface ProjectDetailsCardProps {
-  project: IProject;
+  project: SerializedDocument<IProject>;
 }
 
 export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
@@ -35,7 +36,7 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
     }
 
     await updateProject.mutateAsync({
-      _id: project._id.toString(),
+      _id: project._id,
       brideFirstName: brideFirstName.trim(),
       brideLastName: brideLastName.trim(),
     });
@@ -55,7 +56,7 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
     }
 
     await updateProject.mutateAsync({
-      _id: project._id.toString(),
+      _id: project._id,
       groomFirstName: groomFirstName.trim(),
       groomLastName: groomLastName.trim(),
     });
@@ -70,7 +71,7 @@ export function ProjectDetailsCard({ project }: ProjectDetailsCardProps) {
 
   const handleDateSave = async () => {
     await updateProject.mutateAsync({
-      _id: project._id.toString(),
+      _id: project._id,
       weddingDate: weddingDate ? new Date(weddingDate + 'T12:00:00.000Z') : null,
     });
     setIsEditingDate(false);

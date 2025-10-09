@@ -35,7 +35,7 @@ export function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps)
     reset();
     setWeddingDate('');
     onClose();
-    router.push(`/project/${project._id.toString()}`);
+    router.push(`/project/${project._id}`);
   };
 
   if (!isOpen) return null;

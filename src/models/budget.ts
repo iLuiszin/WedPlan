@@ -1,4 +1,4 @@
-﻿import { Schema, model, models, type Types } from 'mongoose';
+import { Schema, model, models, type Model, type Types } from 'mongoose';
 
 export interface IBudgetItem {
   _id: Types.ObjectId | string;
@@ -108,5 +108,5 @@ budgetSchema.virtual('totalCents').get(function () {
 
 budgetSchema.index({ projectId: 1, createdAt: -1 });
 
-const TempBudgetModel = model<IBudget>('Budget', budgetSchema);
-export const BudgetModel = (models.Budget as typeof TempBudgetModel) || TempBudgetModel;
+export const BudgetModel: Model<IBudget> =
+  (models.Budget as Model<IBudget> | undefined) ?? model<IBudget>('Budget', budgetSchema);

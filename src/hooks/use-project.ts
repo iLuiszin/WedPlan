@@ -9,11 +9,14 @@ import {
   deleteProjectAction,
 } from '@/actions/project-actions';
 import type { CreateProjectInput, UpdateProjectInput } from '@/schemas/project-schema';
+import type { SerializedDocument } from '@/types/mongoose-helpers';
+import type { IProject } from '@/models/project';
 
 const PROJECT_QUERY_KEY = ['project'] as const;
+type ProjectData = SerializedDocument<IProject>;
 
 export function useProject(projectId: string) {
-  return useQuery({
+  return useQuery<ProjectData>({
     queryKey: [...PROJECT_QUERY_KEY, projectId],
     queryFn: async () => {
       const result = await getProjectAction(projectId);
@@ -27,7 +30,7 @@ export function useProject(projectId: string) {
 }
 
 export function useCreateProject() {
-  return useMutation({
+  return useMutation<ProjectData, Error, CreateProjectInput>({
     mutationFn: async (input: CreateProjectInput) => {
       const result = await createProjectAction(input);
       if (!result.success) {
@@ -47,7 +50,7 @@ export function useCreateProject() {
 export function useUpdateProject() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<ProjectData, Error, UpdateProjectInput>({
     mutationFn: async (input: UpdateProjectInput) => {
       const result = await updateProjectAction(input);
       if (!result.success) {
@@ -56,7 +59,7 @@ export function useUpdateProject() {
       return result.data;
     },
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: [...PROJECT_QUERY_KEY, data._id.toString()] });
+      void queryClient.invalidateQueries({ queryKey: [...PROJECT_QUERY_KEY, data._id] });
       toast.success('Projeto atualizado com sucesso!');
     },
     onError: (error: Error) => {

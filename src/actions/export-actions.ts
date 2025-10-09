@@ -4,6 +4,7 @@ import { GuestModel } from '@/models/guest';
 import { connectToDatabase } from '@/lib/db';
 import type { ActionResponse } from '@/types/action-response';
 import { buildGuestsWorkbook } from '@/lib/export-guests';
+import { ErrorCode } from '@/types/error-codes';
 
 export async function exportGuestsAsXLSXAction(
   projectId: string,
@@ -11,7 +12,7 @@ export async function exportGuestsAsXLSXAction(
   try {
     await connectToDatabase();
 
-    const ExcelJS = (await import('exceljs')).default;
+    const ExcelJS = await import('exceljs');
 
     const guests = await GuestModel.find({ projectId }).sort({ lastName: 1, firstName: 1 });
 
@@ -22,6 +23,6 @@ export async function exportGuestsAsXLSXAction(
     return { success: true, data: base64 };
   } catch (error) {
     console.error('Error exporting guests:', error);
-    return { success: false, error: 'Failed to export guests', code: 'EXPORT_ERROR' };
+    return { success: false, error: 'Failed to export guests', code: ErrorCode.EXPORT_ERROR };
   }
 }
