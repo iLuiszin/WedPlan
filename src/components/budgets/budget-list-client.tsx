@@ -2,15 +2,18 @@
 
 import { useState, useMemo } from 'react';
 import { useBudgets } from '@/hooks/use-budgets';
-import { useProjectContext } from '@/components/projects/project-context';
 import { BudgetItem } from './budget-item';
 import type { IBudget } from '@/models/budget';
 
 type SortOption = 'recent' | 'cheapest' | 'expensive' | 'category';
 
-export function BudgetList() {
-  const { projectId } = useProjectContext();
-  const { data: budgets, isLoading, error } = useBudgets(projectId);
+interface BudgetListClientProps {
+  projectId: string;
+  initialData?: IBudget[];
+}
+
+export function BudgetListClient({ projectId, initialData }: BudgetListClientProps) {
+  const { data: budgets, isLoading, error } = useBudgets(projectId, { initialData });
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 

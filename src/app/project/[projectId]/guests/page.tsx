@@ -1,10 +1,24 @@
-'use client';
-
+import { Suspense } from 'react';
 import { GuestForm } from '@/components/guests/guest-form';
-import { GuestList } from '@/components/guests/guest-list';
+import { GuestListClient } from '@/components/guests/guest-list-client';
+import { GuestListSkeleton } from '@/components/guests/guest-list-skeleton';
 import { GuestCounters } from '@/components/guests/guest-counters';
+import { getGuestsAction } from '@/actions/guest-actions';
 
-export default function GuestsPage() {
+export const revalidate = 60;
+
+export default async function GuestsPage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}) {
+  const { projectId } = await params;
+  const result = await getGuestsAction(projectId);
+
+  if (!result.success) {
+    throw new Error(result.error);
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl shadow-lg p-6">
@@ -12,9 +26,11 @@ export default function GuestsPage() {
         <p className="text-gray-600 text-sm">Gerencie os convidados do seu casamento</p>
       </div>
 
-      <GuestCounters />
-      <GuestForm />
-      <GuestList />
+      <GuestCounters projectId={projectId} initialData={result.data} />
+      <GuestForm projectId={projectId} />
+      <Suspense fallback={<GuestListSkeleton />}>
+        <GuestListClient projectId={projectId} initialData={result.data} />
+      </Suspense>
     </div>
   );
 }

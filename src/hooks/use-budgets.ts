@@ -12,7 +12,7 @@ import type { CreateBudgetInput, UpdateBudgetInput } from '@/schemas/budget-sche
 
 const BUDGETS_QUERY_KEY = ['budgets'] as const;
 
-export function useBudgets(projectId: string) {
+export function useBudgets(projectId: string, options = {}) {
   return useQuery({
     queryKey: [...BUDGETS_QUERY_KEY, projectId],
     queryFn: async () => {
@@ -22,6 +22,10 @@ export function useBudgets(projectId: string) {
       }
       return result.data;
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

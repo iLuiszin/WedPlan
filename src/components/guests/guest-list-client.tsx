@@ -1,15 +1,19 @@
 'use client';
 
 import { useGuests } from '@/hooks/use-guests';
-import { useProjectContext } from '@/components/projects/project-context';
 import { GuestItem } from './guest-item';
 import { CoupleCard } from './couple-card';
 import { useState, useMemo } from 'react';
 import { GUEST_FILTERS, GUEST_ROLES, FILTER_LABELS, type GuestFilter } from '@/lib/constants';
+import type { IGuest } from '@/models/guest';
 
-export function GuestList() {
-  const { projectId } = useProjectContext();
-  const { data: guests, isLoading, error } = useGuests(projectId);
+interface GuestListClientProps {
+  projectId: string;
+  initialData?: IGuest[];
+}
+
+export function GuestListClient({ projectId, initialData }: GuestListClientProps) {
+  const { data: guests, isLoading, error } = useGuests(projectId, { initialData });
   const [filterType, setFilterType] = useState<GuestFilter>(GUEST_FILTERS.ALL);
   const [searchQuery, setSearchQuery] = useState('');
 

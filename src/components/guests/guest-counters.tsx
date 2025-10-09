@@ -2,14 +2,18 @@
 
 import { useState } from 'react';
 import { useGuests } from '@/hooks/use-guests';
-import { useProjectContext } from '@/components/projects/project-context';
 import { useModal } from '@/contexts/modal-context';
 import { GUEST_CATEGORIES, GUEST_ROLES } from '@/lib/constants';
 import { exportGuestsAsXLSXAction } from '@/actions/export-actions';
+import type { IGuest } from '@/models/guest';
 
-export function GuestCounters() {
-  const { projectId } = useProjectContext();
-  const { data: guests } = useGuests(projectId);
+interface GuestCountersProps {
+  projectId: string;
+  initialData?: IGuest[];
+}
+
+export function GuestCounters({ projectId, initialData }: GuestCountersProps) {
+  const { data: guests } = useGuests(projectId, { initialData });
   const [isExporting, setIsExporting] = useState(false);
   const { showAlert } = useModal();
 
