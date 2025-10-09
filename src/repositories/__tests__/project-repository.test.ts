@@ -1,13 +1,16 @@
-import { afterAll, afterEach, beforeAll, describe, expect, inject, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { ProjectRepository } from '../project-repository';
-import { ProjectModel } from '@/models/project';
 
 vi.mock('@/lib/db', () => ({
   connectToDatabase: vi.fn(),
 }));
 
-const MONGO_URI = inject('MONGO_URI');
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  throw new Error('MONGODB_URI must be defined for repository tests');
+}
 
 describe('ProjectRepository', () => {
   let repository: ProjectRepository;

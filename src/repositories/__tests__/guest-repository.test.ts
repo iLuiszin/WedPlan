@@ -1,13 +1,17 @@
-import { afterAll, afterEach, beforeAll, describe, expect, inject, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { GuestRepository } from '../guest-repository';
-import { GuestModel } from '@/models/guest';
+import { requireAt } from '../../../tests/utils/array';
 
 vi.mock('@/lib/db', () => ({
   connectToDatabase: vi.fn(),
 }));
 
-const MONGO_URI = inject('MONGO_URI');
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  throw new Error('MONGODB_URI must be defined for repository tests');
+}
 
 describe('GuestRepository', () => {
   let repository: GuestRepository;
@@ -171,7 +175,8 @@ describe('GuestRepository', () => {
       const guests = await repository.findByProject(uniqueProjectId);
 
       expect(guests).toHaveLength(1);
-      expect(guests[0].firstName).toBe('John');
+      const firstGuest = requireAt(guests, 0);
+      expect(firstGuest.firstName).toBe('John');
     });
 
     it('sorts guests by lastName and firstName', async () => {
@@ -201,9 +206,14 @@ describe('GuestRepository', () => {
 
       const guests = await repository.findByProject(testProjectId);
 
-      expect(guests[0].firstName).toBe('Alice');
-      expect(guests[1].firstName).toBe('Bob');
-      expect(guests[2].firstName).toBe('Charlie');
+      expect(guests).toHaveLength(3);
+      const firstGuest = requireAt(guests, 0);
+      const secondGuest = requireAt(guests, 1);
+      const thirdGuest = requireAt(guests, 2);
+
+      expect(firstGuest.firstName).toBe('Alice');
+      expect(secondGuest.firstName).toBe('Bob');
+      expect(thirdGuest.firstName).toBe('Charlie');
     });
   });
 

@@ -1,9 +1,8 @@
-import { afterAll, afterEach, beforeAll, describe, expect, inject, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { GuestService } from '../guest-service';
 import { GuestRepository } from '@/repositories/guest-repository';
-import { GuestModel } from '@/models/guest';
-import { AppError, ErrorCode } from '@/types/error-codes';
+import { AppError } from '@/types/error-codes';
 
 vi.mock('@/lib/db', () => ({
   connectToDatabase: vi.fn(),
@@ -16,7 +15,11 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
-const MONGO_URI = inject('MONGO_URI');
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  throw new Error('MONGODB_URI must be defined for service tests');
+}
 
 describe('GuestService', () => {
   let service: GuestService;
@@ -68,7 +71,9 @@ describe('GuestService', () => {
       });
 
       await expect(service.linkPartners(guest._id, guest._id)).rejects.toThrow(AppError);
-      await expect(service.linkPartners(guest._id, guest._id)).rejects.toThrow('Cannot link guest to self');
+      await expect(service.linkPartners(guest._id, guest._id)).rejects.toThrow(
+        'Cannot link guest to self'
+      );
     });
 
     it('throws error when first guest does not exist', async () => {
@@ -83,7 +88,9 @@ describe('GuestService', () => {
       const fakeId = new mongoose.Types.ObjectId().toString();
 
       await expect(service.linkPartners(fakeId, guestB._id)).rejects.toThrow(AppError);
-      await expect(service.linkPartners(fakeId, guestB._id)).rejects.toThrow('One or both guests not found');
+      await expect(service.linkPartners(fakeId, guestB._id)).rejects.toThrow(
+        'One or both guests not found'
+      );
     });
 
     it('throws error when second guest does not exist', async () => {
@@ -98,7 +105,9 @@ describe('GuestService', () => {
       const fakeId = new mongoose.Types.ObjectId().toString();
 
       await expect(service.linkPartners(guestA._id, fakeId)).rejects.toThrow(AppError);
-      await expect(service.linkPartners(guestA._id, fakeId)).rejects.toThrow('One or both guests not found');
+      await expect(service.linkPartners(guestA._id, fakeId)).rejects.toThrow(
+        'One or both guests not found'
+      );
     });
 
     it('unlinks previous partner when linking to new partner', async () => {

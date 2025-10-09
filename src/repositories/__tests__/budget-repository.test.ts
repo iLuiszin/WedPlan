@@ -1,13 +1,17 @@
-import { afterAll, afterEach, beforeAll, describe, expect, inject, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { BudgetRepository } from '../budget-repository';
-import { BudgetModel } from '@/models/budget';
+import { requireAt, requireDefined } from '../../../tests/utils/array';
 
 vi.mock('@/lib/db', () => ({
   connectToDatabase: vi.fn(),
 }));
 
-const MONGO_URI = inject('MONGO_URI');
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  throw new Error('MONGODB_URI must be defined for repository tests');
+}
 
 describe('BudgetRepository', () => {
   let repository: BudgetRepository;
@@ -52,10 +56,13 @@ describe('BudgetRepository', () => {
       const budget = await repository.create(budgetData);
 
       expect(budget.items).toHaveLength(2);
-      expect(budget.items[0].title).toBe('Venue');
-      expect(budget.items[0].amountCents).toBe(100000);
-      expect(budget.items[1].title).toBe('Catering');
-      expect(budget.items[1].amountCents).toBe(50000);
+      const firstItem = requireAt(budget.items, 0);
+      const secondItem = requireAt(budget.items, 1);
+
+      expect(firstItem.title).toBe('Venue');
+      expect(firstItem.amountCents).toBe(100000);
+      expect(secondItem.title).toBe('Catering');
+      expect(secondItem.amountCents).toBe(50000);
     });
 
     it('creates a budget with categories and providers', async () => {
@@ -78,6 +85,8 @@ describe('BudgetRepository', () => {
                 ],
                 notes: 'Great portfolio',
                 amountCents: 50000,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
             ],
           },
@@ -87,11 +96,15 @@ describe('BudgetRepository', () => {
       const budget = await repository.create(budgetData);
 
       expect(budget.categories).toHaveLength(1);
-      expect(budget.categories[0].name).toBe('Photography');
-      expect(budget.categories[0].providers).toHaveLength(1);
-      expect(budget.categories[0].providers[0].name).toBe('Photo Studio A');
-      expect(budget.categories[0].providers[0].fields).toHaveLength(1);
-      expect(budget.categories[0].providers[0].amountCents).toBe(50000);
+      const category = requireAt(budget.categories, 0);
+
+      expect(category.name).toBe('Photography');
+      expect(category.providers).toHaveLength(1);
+
+      const provider = requireAt(category.providers, 0);
+      expect(provider.name).toBe('Photo Studio A');
+      expect(provider.fields).toHaveLength(1);
+      expect(provider.amountCents).toBe(50000);
     });
 
     it('serializes document correctly', async () => {
@@ -106,7 +119,9 @@ describe('BudgetRepository', () => {
       expect(typeof budget._id).toBe('string');
       expect(typeof budget.createdAt).toBe('string');
       expect(typeof budget.updatedAt).toBe('string');
-      expect(typeof budget.items[0]._id).toBe('string');
+
+      const firstItem = requireAt(budget.items, 0);
+      expect(typeof firstItem._id).toBe('string');
     });
   });
 
@@ -120,10 +135,12 @@ describe('BudgetRepository', () => {
 
       const found = await repository.findById(created._id);
 
-      expect(found).toBeDefined();
-      expect(found?._id).toBe(created._id);
-      expect(found?.items).toHaveLength(1);
-      expect(found?.items[0].title).toBe('Test Item');
+      const budget = requireDefined(found);
+      expect(budget._id).toBe(created._id);
+      expect(budget.items).toHaveLength(1);
+
+      const firstItem = requireAt(budget.items, 0);
+      expect(firstItem.title).toBe('Test Item');
     });
 
     it('returns null for non-existent id', async () => {
@@ -194,37 +211,25 @@ describe('BudgetRepository', () => {
       const budgets = await repository.findByProject(uniqueProjectId);
 
       expect(budgets).toHaveLength(1);
-      expect(budgets[0].items[0].title).toBe('My Budget');
+      const firstBudget = requireAt(budgets, 0);
+      const firstItem = requireAt(firstBudget.items, 0);
+      expect(firstItem.title).toBe('My Budget');
     });
 
     it('sorts budgets by createdAt descending', async () => {
-      const first = await repository.create({
-        projectId: testProjectId,
-        items: [{ title: 'First', amountCents: 1000 }],
-        categories: [],
-      });
-
       await new Promise((resolve) => setTimeout(resolve, 10));
-
-      const second = await repository.create({
-        projectId: testProjectId,
-        items: [{ title: 'Second', amountCents: 2000 }],
-        categories: [],
-      });
-
-      await new Promise((resolve) => setTimeout(resolve, 10));
-
-      const third = await repository.create({
-        projectId: testProjectId,
-        items: [{ title: 'Third', amountCents: 3000 }],
-        categories: [],
-      });
 
       const budgets = await repository.findByProject(testProjectId);
 
-      expect(budgets[0].items[0].title).toBe('Third');
-      expect(budgets[1].items[0].title).toBe('Second');
-      expect(budgets[2].items[0].title).toBe('First');
+      expect(budgets).toHaveLength(3);
+
+      const firstBudget = requireAt(budgets, 0);
+      const secondBudget = requireAt(budgets, 1);
+      const thirdBudget = requireAt(budgets, 2);
+
+      expect(requireAt(firstBudget.items, 0).title).toBe('Third');
+      expect(requireAt(secondBudget.items, 0).title).toBe('Second');
+      expect(requireAt(thirdBudget.items, 0).title).toBe('First');
     });
   });
 
@@ -243,10 +248,13 @@ describe('BudgetRepository', () => {
         ],
       });
 
-      expect(updated).toBeDefined();
-      expect(updated?.items).toHaveLength(2);
-      expect(updated?.items[0].title).toBe('Updated');
-      expect(updated?.items[1].title).toBe('New Item');
+      const updatedBudget = requireDefined(updated);
+      expect(updatedBudget.items).toHaveLength(2);
+
+      const firstItem = requireAt(updatedBudget.items, 0);
+      const secondItem = requireAt(updatedBudget.items, 1);
+      expect(firstItem.title).toBe('Updated');
+      expect(secondItem.title).toBe('New Item');
     });
 
     it('returns null when budget does not exist', async () => {
@@ -275,15 +283,22 @@ describe('BudgetRepository', () => {
                 fields: [],
                 notes: 'Test notes',
                 amountCents: 5000,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
             ],
           },
         ],
       });
 
-      expect(updated?.categories).toHaveLength(1);
-      expect(updated?.categories[0].name).toBe('New Category');
-      expect(updated?.categories[0].providers[0].name).toBe('New Provider');
+      const updatedBudget = requireDefined(updated);
+      expect(updatedBudget.categories).toHaveLength(1);
+
+      const updatedCategory = requireAt(updatedBudget.categories, 0);
+      expect(updatedCategory.name).toBe('New Category');
+
+      const updatedProvider = requireAt(updatedCategory.providers, 0);
+      expect(updatedProvider.name).toBe('New Provider');
     });
 
     it('returns serialized document', async () => {
@@ -297,8 +312,9 @@ describe('BudgetRepository', () => {
         items: [{ title: 'Test', amountCents: 1000 }],
       });
 
-      expect(typeof updated?._id).toBe('string');
-      expect(typeof updated?.updatedAt).toBe('string');
+      const updatedBudget = requireDefined(updated);
+      expect(typeof updatedBudget._id).toBe('string');
+      expect(typeof updatedBudget.updatedAt).toBe('string');
     });
   });
 
