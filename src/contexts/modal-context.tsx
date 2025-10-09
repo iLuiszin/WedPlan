@@ -1,9 +1,22 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { AlertDialog } from '@/components/ui/alert-dialog';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { PromptDialog } from '@/components/ui/prompt-dialog';
+import dynamic from 'next/dynamic';
+
+const AlertDialog = dynamic(
+  () => import('@/components/ui/alert-dialog').then(m => ({ default: m.AlertDialog })),
+  { ssr: false }
+);
+
+const ConfirmDialog = dynamic(
+  () => import('@/components/ui/confirm-dialog').then(m => ({ default: m.ConfirmDialog })),
+  { ssr: false }
+);
+
+const PromptDialog = dynamic(
+  () => import('@/components/ui/prompt-dialog').then(m => ({ default: m.PromptDialog })),
+  { ssr: false }
+);
 
 interface AlertOptions {
   title?: string;
