@@ -24,6 +24,9 @@ export function useGuests(projectId: string, options = {}) {
       }
       return result.data;
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
     ...options,
   });
 }

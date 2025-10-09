@@ -43,6 +43,15 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: "/project/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "s-maxage=60, stale-while-revalidate=300",
+          },
+        ],
+      },
     ];
   },
 };
