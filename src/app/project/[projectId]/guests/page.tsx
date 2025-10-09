@@ -5,6 +5,8 @@ import { GuestListSkeleton } from '@/components/guests/guest-list-skeleton';
 import { GuestCounters } from '@/components/guests/guest-counters';
 import { getGuestsAction } from '@/actions/guest-actions';
 
+export const revalidate = 60;
+
 export default async function GuestsPage({
   params,
 }: {

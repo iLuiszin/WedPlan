@@ -4,6 +4,8 @@ import { BudgetListClient } from '@/components/budgets/budget-list-client';
 import { BudgetListSkeleton } from '@/components/budgets/budget-list-skeleton';
 import { getBudgetsAction } from '@/actions/budget-actions';
 
+export const revalidate = 60;
+
 export default async function BudgetsPage({
   params,
 }: {
