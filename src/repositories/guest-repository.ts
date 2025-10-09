@@ -1,27 +1,33 @@
 import { GuestModel, type IGuest } from '@/models/guest';
 import { connectToDatabase } from '@/lib/db';
-import type { SerializedDocument } from '@/types/mongoose-helpers';
+import {
+  serializeDocument,
+  serializeDocuments,
+  type MongooseDocument,
+  type SerializedDocument,
+} from '@/types/mongoose-helpers';
 
 export class GuestRepository {
   async findByProject(projectId: string): Promise<SerializedDocument<IGuest>[]> {
     await connectToDatabase();
-    const guests = await GuestModel.find({ projectId })
+    const guests = await GuestModel.find()
+      .where('projectId')
+      .equals(projectId)
       .sort({ lastName: 1, firstName: 1 })
-      .lean()
       .exec();
 
-    return JSON.parse(JSON.stringify(guests)) as SerializedDocument<IGuest>[];
+    return serializeDocuments<IGuest>(guests as unknown as MongooseDocument<IGuest>[]);
   }
 
   async findById(id: string): Promise<SerializedDocument<IGuest> | null> {
     await connectToDatabase();
-    const guest = await GuestModel.findById(id).lean().exec();
+    const guest = await GuestModel.findById(id).exec();
 
     if (!guest) {
       return null;
     }
 
-    return JSON.parse(JSON.stringify(guest)) as SerializedDocument<IGuest>;
+    return serializeDocument<IGuest>(guest as unknown as MongooseDocument<IGuest>);
   }
 
   async create(data: {
@@ -34,8 +40,7 @@ export class GuestRepository {
   }): Promise<SerializedDocument<IGuest>> {
     await connectToDatabase();
     const guest = await GuestModel.create(data);
-    const created = await GuestModel.findById(guest._id).lean().exec();
-    return JSON.parse(JSON.stringify(created)) as SerializedDocument<IGuest>;
+    return serializeDocument<IGuest>(guest as unknown as MongooseDocument<IGuest>);
   }
 
   async update(
@@ -49,13 +54,13 @@ export class GuestRepository {
     }>
   ): Promise<SerializedDocument<IGuest> | null> {
     await connectToDatabase();
-    const guest = await GuestModel.findByIdAndUpdate(id, updates, { new: true }).lean().exec();
+    const guest = await GuestModel.findByIdAndUpdate(id, updates, { new: true }).exec();
 
     if (!guest) {
       return null;
     }
 
-    return JSON.parse(JSON.stringify(guest)) as SerializedDocument<IGuest>;
+    return serializeDocument<IGuest>(guest as unknown as MongooseDocument<IGuest>);
   }
 
   async delete(id: string): Promise<boolean> {
