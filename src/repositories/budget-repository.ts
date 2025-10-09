@@ -1,35 +1,40 @@
 import { BudgetModel, type IBudget } from '@/models/budget';
 import { connectToDatabase } from '@/lib/db';
-import type { SerializedDocument } from '@/types/mongoose-helpers';
 import type { CreateBudgetInput, UpdateBudgetInput } from '@/schemas/budget-schema';
+import {
+  serializeDocument,
+  serializeDocuments,
+  type MongooseDocument,
+  type SerializedDocument,
+} from '@/types/mongoose-helpers';
 
 export class BudgetRepository {
   async findByProject(projectId: string): Promise<SerializedDocument<IBudget>[]> {
     await connectToDatabase();
-    const budgets = await BudgetModel.find({ projectId })
+    const budgets = await BudgetModel.find()
+      .where('projectId')
+      .equals(projectId)
       .sort({ createdAt: -1 })
-      .lean()
       .exec();
 
-    return JSON.parse(JSON.stringify(budgets)) as SerializedDocument<IBudget>[];
+    return serializeDocuments<IBudget>(budgets as unknown as MongooseDocument<IBudget>[]);
   }
 
   async findById(id: string): Promise<SerializedDocument<IBudget> | null> {
     await connectToDatabase();
-    const budget = await BudgetModel.findById(id).lean().exec();
+    const budget = await BudgetModel.findById(id).exec();
 
     if (!budget) {
       return null;
     }
 
-    return JSON.parse(JSON.stringify(budget)) as SerializedDocument<IBudget>;
+    return serializeDocument<IBudget>(budget as unknown as MongooseDocument<IBudget>);
   }
 
   async create(data: CreateBudgetInput): Promise<SerializedDocument<IBudget>> {
     await connectToDatabase();
     const budget = await BudgetModel.create(data);
-    const created = await BudgetModel.findById(budget._id).lean().exec();
-    return JSON.parse(JSON.stringify(created)) as SerializedDocument<IBudget>;
+    return serializeDocument<IBudget>(budget as unknown as MongooseDocument<IBudget>);
   }
 
   async update(
@@ -37,13 +42,13 @@ export class BudgetRepository {
     updates: Omit<Partial<UpdateBudgetInput>, '_id'>
   ): Promise<SerializedDocument<IBudget> | null> {
     await connectToDatabase();
-    const budget = await BudgetModel.findByIdAndUpdate(id, updates, { new: true }).lean().exec();
+    const budget = await BudgetModel.findByIdAndUpdate(id, updates, { new: true }).exec();
 
     if (!budget) {
       return null;
     }
 
-    return JSON.parse(JSON.stringify(budget)) as SerializedDocument<IBudget>;
+    return serializeDocument<IBudget>(budget as unknown as MongooseDocument<IBudget>);
   }
 
   async delete(id: string): Promise<boolean> {

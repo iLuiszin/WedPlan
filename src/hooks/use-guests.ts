@@ -97,7 +97,7 @@ export function useLinkPartners() {
 
   return useMutation({
     mutationFn: async ({ aId, bId }: { aId: string; bId: string }) => {
-      const result = await linkPartnersAction(aId, bId);
+      const result = await linkPartnersAction({ aId, bId });
       if (!result.success) {
         throw new Error(result.error);
       }
