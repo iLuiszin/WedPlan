@@ -77,7 +77,8 @@ export async function buildGuestsWorkbook(
     to: { row: 1, column: COLUMN_CONFIG.length },
   };
 
-  worksheet.eachRow((row, index) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  worksheet.eachRow((row: any, index: number) => {
     if (index === 1) {
       return;
     }
