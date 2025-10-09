@@ -2,93 +2,76 @@
 
 import { revalidatePath } from 'next/cache';
 import { createProjectSchema, updateProjectSchema } from '@/schemas/project-schema';
-import type { ActionResponse } from '@/types/action-response';
-import type { IProject } from '@/models/project';
-import type { SerializedDocument } from '@/types/mongoose-helpers';
 import { ProjectRepository } from '@/repositories/project-repository';
-import { ErrorCode } from '@/types/error-codes';
-import { logger } from '@/lib/logger';
+import { AppError, ErrorCode } from '@/types/error-codes';
+import { withAction, withValidatedAction } from '@/lib/action-wrapper';
 
 const projectRepository = new ProjectRepository();
 
-export async function createProjectAction(
-  input: unknown
-): Promise<ActionResponse<SerializedDocument<IProject>>> {
-  const parsed = createProjectSchema.safeParse(input);
-  if (!parsed.success) {
-    return { success: false, error: 'Invalid input', code: ErrorCode.VALIDATION_ERROR };
-  }
+const MONGODB_ID_REGEX = /^[0-9a-fA-F]{24}$/;
 
-  try {
-    const project = await projectRepository.create(parsed.data);
-    return { success: true, data: project };
-  } catch (error) {
-    logger.error('Failed to create project', error as Error, { input: parsed.data });
-    return { success: false, error: 'Failed to create project', code: ErrorCode.DB_ERROR };
+const validateMongoId = (id: string): void => {
+  if (!id || !MONGODB_ID_REGEX.test(id)) {
+    throw new AppError(ErrorCode.VALIDATION_ERROR, 'Invalid project ID');
   }
-}
+};
 
-export async function getProjectAction(
-  projectId: string
-): Promise<ActionResponse<SerializedDocument<IProject>>> {
-  if (!projectId || !/^[0-9a-fA-F]{24}$/.test(projectId)) {
-    return { success: false, error: 'Invalid project ID', code: ErrorCode.VALIDATION_ERROR };
+export const createProjectAction = withValidatedAction(
+  async (input: typeof createProjectSchema._output) => {
+    return await projectRepository.create(input);
+  },
+  {
+    schema: createProjectSchema,
+    operationName: 'Create project',
   }
+);
 
-  try {
+export const getProjectAction = withAction(
+  async (projectId: string) => {
+    validateMongoId(projectId);
+
     const project = await projectRepository.findById(projectId);
     if (!project) {
-      return { success: false, error: 'Project not found', code: ErrorCode.NOT_FOUND };
+      throw new AppError(ErrorCode.NOT_FOUND, 'Project not found');
     }
-    return { success: true, data: project };
-  } catch (error) {
-    logger.error('Failed to fetch project', error as Error, { projectId });
-    return { success: false, error: 'Failed to fetch project', code: ErrorCode.DB_ERROR };
-  }
-}
 
-export async function updateProjectAction(
-  input: unknown
-): Promise<ActionResponse<SerializedDocument<IProject>>> {
-  const parsed = updateProjectSchema.safeParse(input);
-  if (!parsed.success) {
-    return { success: false, error: 'Invalid input', code: ErrorCode.VALIDATION_ERROR };
+    return project;
+  },
+  {
+    operationName: 'Get project',
   }
+);
 
-  try {
-    const { _id, ...updates } = parsed.data;
-    if (!_id || !/^[0-9a-fA-F]{24}$/.test(_id)) {
-      return { success: false, error: 'Invalid project ID', code: ErrorCode.VALIDATION_ERROR };
-    }
+export const updateProjectAction = withValidatedAction(
+  async (input: typeof updateProjectSchema._output) => {
+    const { _id, ...updates } = input;
+    validateMongoId(_id);
 
     const project = await projectRepository.update(_id, updates);
     if (!project) {
-      return { success: false, error: 'Project not found', code: ErrorCode.NOT_FOUND };
+      throw new AppError(ErrorCode.NOT_FOUND, 'Project not found');
     }
 
     revalidatePath(`/project/${_id}`);
-    return { success: true, data: project };
-  } catch (error) {
-    logger.error('Failed to update project', error as Error, { input: parsed.data });
-    return { success: false, error: 'Failed to update project', code: ErrorCode.DB_ERROR };
+    return project;
+  },
+  {
+    schema: updateProjectSchema,
+    operationName: 'Update project',
   }
-}
+);
 
-export async function deleteProjectAction(projectId: string): Promise<ActionResponse<void>> {
-  if (!projectId || !/^[0-9a-fA-F]{24}$/.test(projectId)) {
-    return { success: false, error: 'Invalid project ID', code: ErrorCode.VALIDATION_ERROR };
-  }
+export const deleteProjectAction = withAction(
+  async (projectId: string) => {
+    validateMongoId(projectId);
 
-  try {
     const deleted = await projectRepository.delete(projectId);
     if (!deleted) {
-      return { success: false, error: 'Project not found', code: ErrorCode.NOT_FOUND };
+      throw new AppError(ErrorCode.NOT_FOUND, 'Project not found');
     }
-
-    revalidatePath('/');
-    return { success: true, data: undefined };
-  } catch (error) {
-    logger.error('Failed to delete project', error as Error, { projectId });
-    return { success: false, error: 'Failed to delete project', code: ErrorCode.DB_ERROR };
+  },
+  {
+    revalidate: '/',
+    operationName: 'Delete project',
   }
-}
+);
