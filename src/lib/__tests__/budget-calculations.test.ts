@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calculateBudgetTotal, getBudgetMainCategory } from '../budget-calculations';
-import type { IBudget, IBudgetItem, ICategory, IProvider } from '@/models/budget';
+import type { IBudget, ICategory } from '@/models/budget';
 import type { SerializedDocument } from '@/types/mongoose-helpers';
 
 type SerializedBudget = SerializedDocument<IBudget>;
