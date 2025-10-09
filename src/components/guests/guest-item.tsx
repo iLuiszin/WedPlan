@@ -12,11 +12,11 @@ import { useProjectContext } from '@/components/projects/project-context';
 import { useModal } from '@/contexts/modal-context';
 import { CATEGORY_LABELS, ROLE_LABELS, GUEST_CATEGORIES } from '@/lib/constants';
 import { EditHoverIcon } from '@/components/ui/edit-hover-icon';
-import type { IGuest } from '@/models/guest';
 import type { GuestCategory, GuestRole } from '@/schemas/guest-schema';
+import type { SerializedGuest } from '@/lib/guest-utils';
 
 interface GuestItemProps {
-  guest: IGuest;
+  guest: SerializedGuest;
 }
 
 export function GuestItem({ guest }: GuestItemProps) {
