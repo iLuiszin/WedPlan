@@ -5,6 +5,9 @@ import { useUpdateBudget, useDeleteBudget } from '@/hooks/use-budgets';
 import { useModal } from '@/contexts/modal-context';
 import { BudgetCategory } from './budget-category';
 import type { IBudget, ICategory } from '@/models/budget';
+import type { SerializedDocument } from '@/types/mongoose-helpers';
+
+type SerializedBudget = SerializedDocument<IBudget>;
 
 const toDateOrNull = (value: Date | string | undefined): Date | undefined => {
   if (!value) {
@@ -20,7 +23,7 @@ const toDateOrNull = (value: Date | string | undefined): Date | undefined => {
 };
 
 interface BudgetItemProps {
-  budget: IBudget;
+  budget: SerializedBudget;
 }
 
 export function BudgetItem({ budget }: BudgetItemProps) {

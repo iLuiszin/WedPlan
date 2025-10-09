@@ -108,4 +108,5 @@ budgetSchema.virtual('totalCents').get(function () {
 
 budgetSchema.index({ projectId: 1, createdAt: -1 });
 
-export const BudgetModel = models.Budget || model<IBudget>('Budget', budgetSchema);
+const TempBudgetModel = model<IBudget>('Budget', budgetSchema);
+export const BudgetModel = (models.Budget as typeof TempBudgetModel) || TempBudgetModel;

@@ -1,100 +1,30 @@
 'use client';
 
-import { useState, useMemo } from 'react';
 import { useBudgets } from '@/hooks/use-budgets';
+import { useBudgetFiltering } from '@/hooks/use-budget-filtering';
 import { BudgetItem } from './budget-item';
 import type { IBudget } from '@/models/budget';
+import type { SerializedDocument } from '@/types/mongoose-helpers';
 
 type SortOption = 'recent' | 'cheapest' | 'expensive' | 'category';
+type SerializedBudget = SerializedDocument<IBudget>;
 
 interface BudgetListClientProps {
   projectId: string;
-  initialData?: IBudget[];
+  initialData?: SerializedBudget[];
 }
 
 export function BudgetListClient({ projectId, initialData }: BudgetListClientProps) {
   const { data: budgets, isLoading, error } = useBudgets(projectId, { initialData });
-  const [sortBy, setSortBy] = useState<SortOption>('recent');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  const getBudgetTotal = (budget: IBudget): number => {
-    const itemsTotal = (budget.items ?? []).reduce((sum, item) => sum + item.amountCents, 0);
-
-    const categoriesTotal = (budget.categories ?? []).reduce((sectionSum, category) => {
-      return (
-        sectionSum +
-        (category.providers ?? []).reduce((providerSum, provider) => {
-          const providerExpenses = provider.fields
-            .filter(f => f.itemType === 'expense' && f.fieldType === 'currency')
-            .reduce((fieldSum, field) => {
-              const value = parseFloat(field.value) || 0;
-              return fieldSum + Math.round(value * 100);
-            }, 0);
-          return providerSum + providerExpenses;
-        }, 0)
-      );
-    }, 0);
-
-    return itemsTotal + categoriesTotal;
-  };
-
-  const getBudgetMainCategory = (budget: IBudget): string => {
-    const firstCategory = budget.categories?.[0];
-    return firstCategory?.name ?? 'Sem Categoria';
-  };
-
-  const filteredAndSortedBudgets = useMemo(() => {
-    if (!budgets) return [];
-
-    let result = [...budgets];
-
-    if (categoryFilter !== 'all') {
-      result = result.filter((budget) => {
-        const mainCategory = getBudgetMainCategory(budget);
-        return mainCategory === categoryFilter;
-      });
-    }
-
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case 'cheapest': {
-          const totalA = getBudgetTotal(a);
-          const totalB = getBudgetTotal(b);
-          return totalA - totalB;
-        }
-        case 'expensive': {
-          const totalA = getBudgetTotal(a);
-          const totalB = getBudgetTotal(b);
-          return totalB - totalA;
-        }
-        case 'category': {
-          const catA = getBudgetMainCategory(a);
-          const catB = getBudgetMainCategory(b);
-          return catA.localeCompare(catB, 'pt-BR');
-        }
-        case 'recent':
-        default: {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return dateB - dateA;
-        }
-      }
-    });
-
-    return result;
-  }, [budgets, sortBy, categoryFilter]);
-
-  const availableCategories = useMemo(() => {
-    if (!budgets) return [];
-    const categories = new Set<string>();
-    budgets.forEach((budget) => {
-      const mainCat = getBudgetMainCategory(budget);
-      if (mainCat !== 'Sem Categoria') {
-        categories.add(mainCat);
-      }
-    });
-    return Array.from(categories).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  }, [budgets]);
+  const {
+    filteredBudgets,
+    sortBy,
+    setSortBy,
+    categoryFilter,
+    setCategoryFilter,
+    availableCategories,
+  } = useBudgetFiltering(budgets);
 
   if (isLoading) {
     return <div className="text-center py-8">Carregando orçamentos...</div>;
@@ -149,13 +79,13 @@ export function BudgetListClient({ projectId, initialData }: BudgetListClientPro
         </div>
       </div>
 
-      {filteredAndSortedBudgets.length === 0 ? (
+      {filteredBudgets.length === 0 ? (
         <div className="bg-gray-50 p-8 rounded-lg text-center text-gray-600">
           Nenhum orçamento encontrado para a categoria selecionada.
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredAndSortedBudgets.map((budget) => (
+          {filteredBudgets.map((budget) => (
             <BudgetItem key={budget._id.toString()} budget={budget} />
           ))}
         </div>
