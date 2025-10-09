@@ -10,10 +10,13 @@ export async function exportGuestsAsXLSXAction(
 ): Promise<ActionResponse<string>> {
   try {
     await connectToDatabase();
+
+    const ExcelJS = (await import('exceljs')).default;
+
     // @ts-expect-error - Mongoose typing complexity when inferring model generics
     const guests = await GuestModel.find({ projectId }).sort({ lastName: 1, firstName: 1 });
 
-    const workbookData = await buildGuestsWorkbook(guests);
+    const workbookData = await buildGuestsWorkbook(guests, ExcelJS);
 
     const base64 = Buffer.from(workbookData).toString('base64');
 
