@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, inject, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import mongoose from 'mongoose';
 import { GuestService } from '../guest-service';
 import { GuestRepository } from '@/repositories/guest-repository';
@@ -15,7 +15,11 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
-const MONGO_URI = inject('MONGO_URI');
+const MONGO_URI = process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+  throw new Error('MONGODB_URI must be defined for service tests');
+}
 
 describe('GuestService', () => {
   let service: GuestService;
