@@ -52,7 +52,8 @@ export default function RootLayout({
           <div className="min-h-screen bg-cream">
             <Header />
             <Nav />
-            <main className="container mx-auto px-4 py-8">{children}</main>
+            {/* Remove container restriction for homepage, add it conditionally for other pages */}
+            <main className="w-full">{children}</main>
           </div>
         </AppProvider>
         <Analytics />
