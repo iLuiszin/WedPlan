@@ -2,6 +2,7 @@ import { Schema, model, models, type Model, type Types } from 'mongoose';
 
 export interface IProject {
   _id: Types.ObjectId;
+  slug: string;
   brideFirstName: string;
   brideLastName: string;
   groomFirstName: string;
@@ -13,6 +14,7 @@ export interface IProject {
 
 const projectSchema = new Schema<IProject>(
   {
+    slug: { type: String, required: true, trim: true, maxlength: 120, unique: true, index: true },
     brideFirstName: { type: String, required: true, trim: true, maxlength: 100 },
     brideLastName: { type: String, required: true, trim: true, maxlength: 100 },
     groomFirstName: { type: String, required: true, trim: true, maxlength: 100 },
