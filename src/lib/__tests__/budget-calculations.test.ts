@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBudgetTotal, getBudgetMainCategory } from '../budget-calculations';
+import { calculateBudgetTotal, getBudgetMainCategory } from '@/features/budgets/utils/calculations';
 import type { IBudget, ICategory } from '@/models/budget';
 import type { SerializedDocument } from '@/types/mongoose-helpers';
 

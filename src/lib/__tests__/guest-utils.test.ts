@@ -4,8 +4,8 @@ import {
   getGuestFullName,
   matchesSearch,
   searchInCouples,
-  type SerializedGuest,
-} from '../guest-utils';
+} from '@/features/guests/utils/guest-helpers';
+import type { SerializedGuest } from '@/features/guests/types';
 
 const createGuest = (
   overrides: Partial<SerializedGuest> = {}
