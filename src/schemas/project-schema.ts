@@ -1,13 +1,26 @@
 import { z } from 'zod';
 
-export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId');
+export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID inválido');
+
+const getTodayStart = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
+
+const MAX_DATE = new Date('2100-12-31T23:59:59.999Z');
 
 export const createProjectSchema = z.object({
-  brideFirstName: z.string().trim().min(1, 'Bride first name required').max(100),
-  brideLastName: z.string().trim().min(1, 'Bride last name required').max(100),
-  groomFirstName: z.string().trim().min(1, 'Groom first name required').max(100),
-  groomLastName: z.string().trim().min(1, 'Groom last name required').max(100),
-  weddingDate: z.date().nullable().optional(),
+  brideFirstName: z.string().trim().min(1, 'Nome da noiva é obrigatório').max(100, 'Nome da noiva muito longo'),
+  brideLastName: z.string().trim().min(1, 'Sobrenome da noiva é obrigatório').max(100, 'Sobrenome da noiva muito longo'),
+  groomFirstName: z.string().trim().min(1, 'Nome do noivo é obrigatório').max(100, 'Nome do noivo muito longo'),
+  groomLastName: z.string().trim().min(1, 'Sobrenome do noivo é obrigatório').max(100, 'Sobrenome do noivo muito longo'),
+  weddingDate: z
+    .date()
+    .min(getTodayStart(), 'A data do casamento não pode ser no passado')
+    .max(MAX_DATE, 'A data do casamento deve ser antes de 2100')
+    .nullable()
+    .optional(),
 });
 
 export const updateProjectSchema = createProjectSchema.partial().extend({

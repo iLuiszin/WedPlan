@@ -6,12 +6,12 @@ export const GUEST_ROLES = ['guest', 'groomsman', 'bridesmaid'] as const;
 export const guestCategoryEnum = z.enum(GUEST_CATEGORIES);
 export const guestRoleEnum = z.enum(GUEST_ROLES);
 
-export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId');
+export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID inválido');
 
 const baseGuestSchema = z.object({
   projectId: objectIdSchema,
-  firstName: z.string().trim().min(1, 'First name required').max(100),
-  lastName: z.string().trim().min(1, 'Last name required').max(100),
+  firstName: z.string().trim().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
+  lastName: z.string().trim().min(1, 'Sobrenome é obrigatório').max(100, 'Sobrenome muito longo'),
   category: guestCategoryEnum,
   role: guestRoleEnum,
   partnerId: objectIdSchema.nullable().optional(),

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import { getProjectAction } from '@/actions/project-actions';
-import { ProjectProvider } from '@/components/projects/project-context';
+import { getProjectAction } from '@/features/projects/actions';
+import { ProjectProvider } from '@/features/projects/components/project-context';
 
 export default async function ProjectLayout({
   children,

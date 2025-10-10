@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { AppError, ErrorCode } from '@/types/error-codes';
 import { logger } from './logger';
+import { connectToDatabase } from './db';
 import type { ActionResponse } from '@/types/action-response';
 import type { ZodSchema } from 'zod';
 
@@ -21,6 +22,7 @@ export const withAction = <TInput, TOutput>(
 ) => {
   return async (input: TInput): Promise<ActionResponse<TOutput>> => {
     try {
+      await connectToDatabase();
       const data = await actionFunction(input);
 
       if (options?.revalidate) {
