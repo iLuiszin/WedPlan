@@ -1,7 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { CreateProjectModal } from '@/components/projects/create-project-modal';
+import dynamic from 'next/dynamic';
+
+const CreateProjectModal = dynamic(
+  () => import('@/features/projects/components/create-project-modal').then(m => ({ default: m.CreateProjectModal })),
+  { ssr: false }
+);
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,9 +14,7 @@ export default function HomePage() {
   return (
     <>
       <div className="min-h-[600px] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-          WedPlan
-        </h1>
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">WedPlan</h1>
         <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl">
           Organize seu casamento de forma simples e colaborativa. Gerencie convidados, orçamentos e
           muito mais.

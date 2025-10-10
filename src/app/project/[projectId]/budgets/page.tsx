@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import { BudgetForm } from '@/components/budgets/budget-form';
-import { BudgetListClient } from '@/components/budgets/budget-list-client';
-import { BudgetListSkeleton } from '@/components/budgets/budget-list-skeleton';
-import { getBudgetsAction } from '@/actions/budget-actions';
+import { BudgetForm } from '@/features/budgets/components/budget-form';
+import { BudgetListClient } from '@/features/budgets/components/budget-list-client';
+import { BudgetListSkeleton } from '@/features/budgets/components/budget-list-skeleton';
+import { getBudgetsAction } from '@/features/budgets/actions';
 
 export const revalidate = 60;
 

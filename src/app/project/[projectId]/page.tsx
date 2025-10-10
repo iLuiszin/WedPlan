@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useProjectContext } from '@/components/projects/project-context';
-import { useProject } from '@/hooks/use-project';
-import { ShareableUrl } from '@/components/projects/shareable-url';
-import { ProjectDetailsCard } from '@/components/projects/project-details-card';
+import { useProjectContext } from '@/features/projects/components/project-context';
+import { useProject } from '@/features/projects/hooks/use-project';
+import { ShareableUrl } from '@/features/projects/components/shareable-url';
+import { ProjectDetailsCard } from '@/features/projects/components/project-details-card';
 
 export default function ProjectPage() {
   const { projectId } = useProjectContext();

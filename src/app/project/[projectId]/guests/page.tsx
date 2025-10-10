@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
-import { GuestForm } from '@/components/guests/guest-form';
-import { GuestListClient } from '@/components/guests/guest-list-client';
-import { GuestListSkeleton } from '@/components/guests/guest-list-skeleton';
-import { GuestCounters } from '@/components/guests/guest-counters';
-import { getGuestsAction } from '@/actions/guest-actions';
+import { GuestForm } from '@/features/guests/components/guest-form';
+import { GuestListClient } from '@/features/guests/components/guest-list-client';
+import { GuestListSkeleton } from '@/features/guests/components/guest-list-skeleton';
+import { GuestCounters } from '@/features/guests/components/guest-counters';
+import { getGuestsAction } from '@/features/guests/actions';
 
 export const revalidate = 60;
 
