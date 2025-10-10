@@ -8,7 +8,7 @@ import {
 export async function createGuest(data: {
   projectId: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
   category: 'groom' | 'bride' | 'both';
   role: 'guest' | 'groomsman' | 'bridesmaid';
   partnerId?: string | null;
