@@ -11,7 +11,7 @@ export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'ID inválid
 const baseGuestSchema = z.object({
   projectId: objectIdSchema,
   firstName: z.string().trim().min(1, 'Nome é obrigatório').max(100, 'Nome muito longo'),
-  lastName: z.string().trim().min(1, 'Sobrenome é obrigatório').max(100, 'Sobrenome muito longo'),
+  lastName: z.string().trim().max(100, 'Sobrenome muito longo').optional(),
   category: guestCategoryEnum,
   role: guestRoleEnum,
   partnerId: objectIdSchema.nullable().optional(),

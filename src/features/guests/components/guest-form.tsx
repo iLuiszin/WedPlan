@@ -70,7 +70,7 @@ export function GuestForm({ projectId }: GuestFormProps) {
 
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-            Sobrenome *
+            Sobrenome
           </label>
           <input
             {...register('lastName')}
