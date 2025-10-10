@@ -17,8 +17,8 @@ const brandConfig = {
   },
 };
 
-const brandTitleClass = 'text-xl md:text-2xl font-bold text-primary';
-const brandTitleLargeClass = 'text-2xl md:text-3xl font-bold text-primary';
+const brandTitleClass = 'text-2xl md:text-3xl font-script text-primary';
+const brandTitleLargeClass = 'text-3xl md:text-4xl font-script text-primary';
 
 type BrandProps = {
   titleClassName?: string;
@@ -58,18 +58,18 @@ function HeaderComponent() {
   const { data: project } = useProject(projectId || '');
 
   return (
-    <header className="border-b bg-white">
+    <header className="border-b border-gray-200 bg-white">
       <div className="container mx-auto px-4 py-4 md:py-6">
         {projectId ? (
           project ? (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
               <Brand />
               <div className="text-center sm:text-right">
-                <p className="text-base md:text-xl font-semibold text-gray-800">
+                <p className="text-base md:text-xl font-display font-semibold text-navy">
                   {project.brideFirstName} & {project.groomFirstName}
                 </p>
                 {project.weddingDate && (
-                  <p className="text-xs md:text-sm text-gray-600">
+                  <p className="text-xs md:text-sm text-navy-light">
                     {new Date(project.weddingDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                   </p>
                 )}
@@ -82,7 +82,7 @@ function HeaderComponent() {
           <>
             <div className="flex flex-col items-center text-center">
               <Brand titleClassName={brandTitleLargeClass} />
-              <p className="text-sm text-gray-600 mt-1 text-center">Planeje seu dia perfeito</p>
+              <p className="text-sm text-navy-light mt-1 text-center">Planeje seu dia perfeito</p>
             </div>
           </>
         )}

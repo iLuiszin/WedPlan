@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Montserrat, Great_Vibes } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 import { AppProvider } from '@/app/provider';
@@ -14,6 +14,22 @@ const inter = Inter({
   variable: '--font-inter',
   adjustFontFallback: true,
   fallback: ['system-ui', 'arial'],
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-montserrat',
+  weight: ['400', '500', '600', '700', '800'],
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-great-vibes',
+  weight: ['400'],
 });
 
 export const metadata: Metadata = {
@@ -31,9 +47,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${montserrat.variable} ${greatVibes.variable} font-sans`}>
         <AppProvider>
-          <div className="min-h-screen bg-gradient-to-br from-primary to-secondary">
+          <div className="min-h-screen bg-cream">
             <Header />
             <Nav />
             <main className="container mx-auto px-4 py-8">{children}</main>

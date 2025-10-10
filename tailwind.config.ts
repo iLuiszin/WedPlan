@@ -12,12 +12,31 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#667eea',
-          dark: '#5568d3',
+          DEFAULT: '#FF7A6B',
+          light: '#FFB4A2',
+          dark: '#E6645A',
         },
         secondary: {
-          DEFAULT: '#764ba2',
+          DEFAULT: '#FFB4A2',
         },
+        accent: {
+          DEFAULT: '#F4A261',
+          light: '#F9C894',
+          dark: '#E68E4E',
+        },
+        cream: {
+          DEFAULT: '#FFFBF7',
+          dark: '#FFF5F0',
+        },
+        navy: {
+          DEFAULT: '#2B2D42',
+          light: '#8D99AE',
+        },
+      },
+      fontFamily: {
+        script: ['var(--font-great-vibes)', 'cursive'],
+        display: ['var(--font-montserrat)', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'arial'],
       },
     },
   },
